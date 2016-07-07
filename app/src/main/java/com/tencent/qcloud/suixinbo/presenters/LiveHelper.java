@@ -214,7 +214,9 @@ public class LiveHelper extends Presenter {
             SxbLog.i(TAG, "requestViewList identifiers : " + identifiers.size());
             SxbLog.i(TAG, "requestViewList alreadyIds : " + alreadyIds.size());
             for (String id : identifiers) {//把新加入的添加到后面
-                alreadyIds.add(id);
+                if (!alreadyIds.contains(id)) {
+                    alreadyIds.add(id);
+                }
             }
             int viewindex = 0;
             for (String id : alreadyIds) {//一并请求
@@ -227,7 +229,7 @@ public class LiveHelper extends Presenter {
                 mRequestIdentifierList[viewindex] = id;
                 viewindex++;
             }
-            int ret = AVEndpoint.requestViewList(mRequestIdentifierList, mRequestViewList, alreadyIds.size(), mRequestViewListCompleteCallback);
+            int ret = AVEndpoint.requestViewList(mRequestIdentifierList, mRequestViewList, viewindex, mRequestViewListCompleteCallback);
 
 
         } else {
