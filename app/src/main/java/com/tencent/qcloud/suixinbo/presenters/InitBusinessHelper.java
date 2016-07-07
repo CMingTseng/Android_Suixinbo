@@ -76,6 +76,7 @@ public class InitBusinessHelper {
         default:
             break;
         }
+        TIMManager.getInstance().setEnv(1);
         TIMManager.getInstance().init(context);
 
         TIMManager.getInstance().setUserStatusListener(new TIMUserStatusListener() {

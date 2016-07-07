@@ -64,6 +64,7 @@
     <string name="profile_nickname">昵称</string>
     <string name="profile_sign">签名</string>
     <string name="profile_set">设置</string>
+
     <string name="profile_about">关于随心播</string>
     <string name="btn_login_out">退出登录</string>
     <string name="tip_force_offline">您的帐号已在其它地方登陆</string>
@@ -115,4 +116,13 @@
     <string name="host_funs">粉丝数:9090</string>
     <string name="host_follow">关注:7089</string>
     <string name="host_admire">赞:11.3w</string>
+
+
+    <string name="ping_ing">测速中</string>
+    <string name="ping_progress">测速进度</string>
+    <string name="ping_speed_test">网络测速</string>
+    <string name="ping_start">开始测速</string>
+    <string name="ping_no_server">获取测速列表失败，请稍后重试</string>
+    <string name="ping_time">平均时延</string>
+    <string name="ping_miss">丢包率</string>
 </resources>
