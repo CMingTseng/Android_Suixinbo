@@ -772,8 +772,9 @@ public class LiveHelper extends Presenter {
 
             @Override
             public void onSuccess() {
-                mLiveView.stopStreamSucc();
-
+                if (null != mLiveView) {
+                    mLiveView.stopStreamSucc();
+                }
             }
         });
     }
