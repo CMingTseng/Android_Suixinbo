@@ -2,14 +2,20 @@ package com.tencent.qcloud.suixinbo.views;
 
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
+import android.support.annotation.MainThread;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +27,11 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 import com.tencent.TIMManager;
 import com.tencent.TIMUserProfile;
+import com.tencent.TIMValueCallBack;
+import com.tencent.av.PingResult;
+import com.tencent.av.ServerInfo;
+import com.tencent.av.TIMAvManager;
+import com.tencent.av.TIMPingCallBack;
 import com.tencent.av.sdk.AVContext;
 import com.tencent.qalsdk.QALSDKManager;
 import com.tencent.qcloud.suixinbo.R;
@@ -33,6 +44,7 @@ import com.tencent.qcloud.suixinbo.utils.GlideCircleTransform;
 import com.tencent.qcloud.suixinbo.utils.SxbLog;
 import com.tencent.qcloud.suixinbo.utils.UIUtils;
 import com.tencent.qcloud.suixinbo.views.customviews.LineControllerView;
+import com.tencent.qcloud.suixinbo.views.customviews.SpeedTestDialog;
 
 import java.util.List;
 
@@ -52,6 +64,8 @@ public class FragmentProfile extends Fragment implements View.OnClickListener, L
     private LineControllerView mBtnLogout;
     private LineControllerView mBtnSet;
     private LineControllerView mVersion;
+    private LineControllerView mSpeedTest;
+
 
     public FragmentProfile() {
     }
@@ -73,12 +87,13 @@ public class FragmentProfile extends Fragment implements View.OnClickListener, L
         mProfileInfo = (TextView) view.findViewById(R.id.profile_info);
         mBtnSet = (LineControllerView) view.findViewById(R.id.profile_set);
         mBtnLogout = (LineControllerView) view.findViewById(R.id.logout);
+        mSpeedTest = (LineControllerView) view.findViewById(R.id.profile_speed_test);
         mVersion = (LineControllerView) view.findViewById(R.id.version);
         mBtnSet.setOnClickListener(this);
         mBtnLogout.setOnClickListener(this);
         mEditProfile.setOnClickListener(this);
         mVersion.setOnClickListener(this);
-
+        mSpeedTest.setOnClickListener(this);
         mLoginHeloper = new LoginHelper(getActivity().getApplicationContext(), this);
         mProfileHelper = new ProfileInfoHelper(this);
         return view;
@@ -132,6 +147,9 @@ public class FragmentProfile extends Fragment implements View.OnClickListener, L
                 break;
             case R.id.version:
                 showSDKVersion();
+                break;
+            case R.id.profile_speed_test:
+                new SpeedTestDialog(getContext()).start();
                 break;
         }
     }

@@ -82,7 +82,7 @@ public class LoginHelper extends Presenter {
 
     /**
      * 退出imsdk
-     * <p/>
+     * <p>
      * 退出成功会调用退出AVSDK
      */
     public void imLogout() {
@@ -111,7 +111,7 @@ public class LoginHelper extends Presenter {
      * @param password
      */
     public void tlsLogin(String id, String password) {
-        InitBusinessHelper.getmLoginHelper().TLSPwdLogin(id, password.getBytes(), new TLSPwdLoginListener() {
+        int ret = InitBusinessHelper.getmLoginHelper().TLSPwdLogin(id, password.getBytes(), new TLSPwdLoginListener() {
             @Override
             public void OnPwdLoginSuccess(TLSUserInfo tlsUserInfo) {//获取用户信息
 //                Toast.makeText(mContext, "TLS login succ ! " + tlsUserInfo.identifier, Toast.LENGTH_SHORT).show();
@@ -144,6 +144,9 @@ public class LoginHelper extends Presenter {
                 Toast.makeText(mContext, "OnPwdLoginTimeout：\n" + tlsErrInfo.Msg, Toast.LENGTH_SHORT).show();
             }
         });
+        if (ret != -1001) {
+            Toast.makeText(mContext, "input invalid !", Toast.LENGTH_SHORT).show();
+        }
     }
 
 
@@ -154,7 +157,7 @@ public class LoginHelper extends Presenter {
      * @param psw
      */
     public void tlsRegister(final String id, final String psw) {
-        InitBusinessHelper.getmAccountHelper().TLSStrAccReg(id, psw, new TLSStrAccRegListener() {
+        int ret = InitBusinessHelper.getmAccountHelper().TLSStrAccReg(id, psw, new TLSStrAccRegListener() {
             @Override
             public void OnStrAccRegSuccess(TLSUserInfo tlsUserInfo) {
                 Toast.makeText(mContext, tlsUserInfo.identifier + " register a user succ !  ", Toast.LENGTH_SHORT).show();
@@ -172,6 +175,9 @@ public class LoginHelper extends Presenter {
                 Toast.makeText(mContext, " register timeout ! " + tlsErrInfo.Msg, Toast.LENGTH_SHORT).show();
             }
         });
+        if (ret != -1001) {
+            Toast.makeText(mContext, "input invalid !", Toast.LENGTH_SHORT).show();
+        }
     }
 
 

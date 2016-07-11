@@ -364,7 +364,7 @@ public class LiveHelper extends Presenter {
         }
     }
 
-    public void pause(){
+    public void pause() {
         isBakCameraOpen = isOpenCamera;
         isBakMicOpen = isMicOpen;
         if (isBakCameraOpen || isBakMicOpen) {    // 若摄像头或Mic打开
@@ -381,7 +381,7 @@ public class LiveHelper extends Presenter {
         }
     }
 
-    public void resume(){
+    public void resume() {
         if (isBakCameraOpen || isBakMicOpen) {
             sendGroupMessage(Constants.AVIMCMD_Host_Back, "", new TIMValueCallBack<TIMMessage>() {
                 @Override
@@ -394,10 +394,10 @@ public class LiveHelper extends Presenter {
                 }
             });
 
-            if (isBakCameraOpen){
+            if (isBakCameraOpen) {
                 openCamera();
             }
-            if (isBakMicOpen){
+            if (isBakMicOpen) {
                 openMic();
             }
         }
@@ -842,7 +842,8 @@ public class LiveHelper extends Presenter {
         changeAuthority(auth_bits, null, new AVRoomMulti.ChangeAuthorityCallback() {
             protected void onChangeAuthority(int retCode) {
                 SxbLog.i(TAG, "changeAuthority code " + retCode);
-                changeRole(role, leverChange);
+                if (retCode == AVError.AV_OK)
+                    changeRole(role, leverChange);
             }
         });
     }
