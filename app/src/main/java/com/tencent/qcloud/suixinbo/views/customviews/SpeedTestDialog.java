@@ -65,7 +65,7 @@ public class SpeedTestDialog {
     }
 
     public void start(){
-        TIMAvManager.getInstance().requestSpeedTest((short) 7, (short) 6, 0, new TIMPingCallBack() {
+        TIMAvManager.getInstance().requestSpeedTest(new TIMPingCallBack() {
             @Override
             public void onError(int code, String desc) {
                 Log.e(TAG, "ping failed. code: " + code + " desc: " + desc);
