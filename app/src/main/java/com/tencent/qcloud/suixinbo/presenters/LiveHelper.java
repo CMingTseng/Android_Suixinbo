@@ -243,10 +243,14 @@ public class LiveHelper extends Presenter {
 
     private AVEndpoint.RequestViewListCompleteCallback mRequestViewListCompleteCallback = new AVEndpoint.RequestViewListCompleteCallback() {
         protected void OnComplete(String identifierList[], AVView viewList[], int count, int result) {
-            SxbLog.d(TAG, LogConstants.ACTION_VIEWER_SHOW + LogConstants.DIV + LogConstants.STEP.STEP6);
+            String ids = "";
+
             for (String id : identifierList) {
                 mLiveView.showVideoView(REMOTE, id);
+                ids = ids + " " + id;
             }
+            SxbLog.d(TAG, LogConstants.ACTION_VIEWER_SHOW + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + "get stream data"
+                    + LogConstants.DIV + LogConstants.STATUS.SUCCEED + LogConstants.DIV + "ids " + ids);
             // TODO
             SxbLog.d(TAG, "RequestViewListCompleteCallback.OnComplete");
         }
@@ -350,18 +354,24 @@ public class LiveHelper extends Presenter {
 
     public void perpareQuitRoom(boolean bPurpose) {
         if (bPurpose) {
-            SxbLog.d(TAG, LogConstants.ACTION_VIEWER_QUIT_ROOM + LogConstants.DIV + LogConstants.STEP.STEP1);
-            SxbLog.d(TAG, LogConstants.ACTION_HOST_QUIT_ROOM + LogConstants.DIV + LogConstants.STEP.STEP1);
+            SxbLog.d(TAG, LogConstants.ACTION_VIEWER_QUIT_ROOM + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + "start quit room");
+            SxbLog.d(TAG, LogConstants.ACTION_HOST_QUIT_ROOM + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + "start quit room");
             sendGroupMessage(Constants.AVIMCMD_ExitLive, "", new TIMValueCallBack<TIMMessage>() {
                 @Override
                 public void onError(int i, String s) {
+                    SxbLog.d(TAG, LogConstants.ACTION_VIEWER_QUIT_ROOM + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + "send quit room message"
+                            + LogConstants.DIV + LogConstants.STATUS.FAILED + LogConstants.DIV + "code:" + i + " msg:" + s);
+                    SxbLog.d(TAG, LogConstants.ACTION_HOST_QUIT_ROOM + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + "send quit room message"
+                            + LogConstants.DIV + LogConstants.STATUS.FAILED + LogConstants.DIV + "code:" + i + " msg:" + s);
                     notifyQuitReady();
                 }
 
                 @Override
                 public void onSuccess(TIMMessage timMessage) {
-                    SxbLog.d(TAG, LogConstants.ACTION_VIEWER_QUIT_ROOM + LogConstants.DIV + LogConstants.STEP.STEP2);
-                    SxbLog.d(TAG, LogConstants.ACTION_HOST_QUIT_ROOM + LogConstants.DIV + LogConstants.STEP.STEP2);
+                    SxbLog.d(TAG, LogConstants.ACTION_VIEWER_QUIT_ROOM + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + "send quit room message"
+                            + LogConstants.DIV + LogConstants.STATUS.SUCCEED);
+                    SxbLog.d(TAG, LogConstants.ACTION_HOST_QUIT_ROOM + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + "send quit room message"
+                            + LogConstants.DIV + LogConstants.STATUS.SUCCEED);
                     notifyQuitReady();
                 }
             });
@@ -531,7 +541,8 @@ public class LiveHelper extends Presenter {
             int action = json.getInt(Constants.CMD_KEY);
             switch (action) {
                 case Constants.AVIMCMD_MUlTI_HOST_INVITE:
-                    SxbLog.d(TAG, LogConstants.ACTION_VIEWER_SHOW + LogConstants.DIV + LogConstants.STEP.STEP2);
+                    SxbLog.d(TAG, LogConstants.ACTION_VIEWER_SHOW + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + "receive invite message" +
+                        LogConstants.DIV + "id " + identifier);
                     mLiveView.showInviteDialog();
                     break;
                 case Constants.AVIMCMD_MUlTI_JOIN:
@@ -749,12 +760,15 @@ public class LiveHelper extends Presenter {
                 @Override
                 public void onError(int i, String s) {
                     SxbLog.e(TAG, "url error " + i + " : " + s);
+                    SxbLog.d(TAG, LogConstants.ACTION_HOST_CREATE_ROOM + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + "start push stream" +
+                            LogConstants.DIV + LogConstants.STATUS.FAILED + LogConstants.DIV + "code:" + i + " msg:" + s);
                     Toast.makeText(mContext, "start stream error,try again " + i + " : " + s, Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
                 public void onSuccess(TIMAvManager.StreamRes streamRes) {
-                    SxbLog.d(TAG, LogConstants.ACTION_HOST_CREATE_ROOM + LogConstants.DIV + LogConstants.STEP.STEP11);
+                    SxbLog.d(TAG, LogConstants.ACTION_HOST_CREATE_ROOM + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + "start push stream" +
+                            LogConstants.DIV + LogConstants.STATUS.SUCCEED + LogConstants.DIV + "room id " + MySelfInfo.getInstance().getMyRoomNum());
                     List<TIMAvManager.LiveUrl> liveUrls = streamRes.getUrls();
                     streamChannelID = streamRes.getChnlId();
                     mLiveView.pushStreamSucc(streamRes);
@@ -797,14 +811,16 @@ public class LiveHelper extends Presenter {
         TIMAvManager.getInstance().requestMultiVideoRecorderStart(roomInfo, mRecordParam, new TIMCallBack() {
             @Override
             public void onError(int i, String s) {
-                Log.e(TAG, "Record error" + i + " : " + s);
+                SxbLog.d(TAG, LogConstants.ACTION_HOST_CREATE_ROOM + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + "start record" +
+                        LogConstants.DIV + LogConstants.STATUS.FAILED + LogConstants.DIV + "code:" + i + " msg:" + s);
                 mLiveView.startRecordCallback(false);
             }
 
             @Override
             public void onSuccess() {
                 mLiveView.startRecordCallback(true);
-                SxbLog.d(TAG, LogConstants.ACTION_HOST_CREATE_ROOM + LogConstants.DIV + LogConstants.STEP.STEP9);
+                SxbLog.d(TAG, LogConstants.ACTION_HOST_CREATE_ROOM + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + "start record" +
+                        LogConstants.DIV + LogConstants.STATUS.SUCCEED + LogConstants.DIV + "room id " + MySelfInfo.getInstance().getMyRoomNum());
             }
         });
 
@@ -852,8 +868,10 @@ public class LiveHelper extends Presenter {
             protected void onChangeAuthority(int retCode) {
                 SxbLog.i(TAG, "changeAuthority code " + retCode);
                 if (retCode == AVError.AV_OK){
-                    SxbLog.d(TAG, LogConstants.ACTION_VIEWER_SHOW + LogConstants.DIV + LogConstants.STEP.STEP4);
-                    SxbLog.d(TAG, LogConstants.ACTION_VIEWER_UNSHOW + LogConstants.DIV + LogConstants.STEP.STEP2);
+                    SxbLog.d(TAG, LogConstants.ACTION_VIEWER_SHOW + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + "change auth role"
+                            + LogConstants.DIV + LogConstants.STATUS.SUCCEED + LogConstants.DIV + "role " + role);
+                    SxbLog.d(TAG, LogConstants.ACTION_VIEWER_UNSHOW + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + "change auth role"
+                            + LogConstants.DIV + LogConstants.STATUS.SUCCEED + LogConstants.DIV + "role " + role);
                     changeRole(role, leverChange);
                 }
 
@@ -888,7 +906,7 @@ public class LiveHelper extends Presenter {
      *
      * @param role 角色名
      */
-    public void changeRole(String role, final boolean leverupper) {
+    public void changeRole(final String role, final boolean leverupper) {
         ((AVRoomMulti) (QavsdkControl.getInstance().getRoom())).changeAVControlRole(role, new AVRoomMulti.ChangeAVControlRoleCompleteCallback() {
                     @Override
                     public void OnComplete(int arg0) {
@@ -898,12 +916,15 @@ public class LiveHelper extends Presenter {
                                 openCameraAndMic();//打开摄像头
                                 sendC2CMessage(Constants.AVIMCMD_MUlTI_JOIN, "", CurLiveInfo.getHostID());//发送回应消息
                             } else {
-                                SxbLog.d(TAG, LogConstants.ACTION_VIEWER_UNSHOW + LogConstants.DIV + LogConstants.STEP.STEP3);
+                                SxbLog.d(TAG, LogConstants.ACTION_VIEWER_UNSHOW + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + "change role down"
+                                        + LogConstants.DIV + LogConstants.STATUS.SUCCEED + LogConstants.DIV + "role " + role);
                                 closeCameraAndMic();
                             }
 
                             Toast.makeText(mContext, "change to VideoMember succ !", Toast.LENGTH_SHORT);
                         } else {
+                            SxbLog.d(TAG, LogConstants.ACTION_VIEWER_UNSHOW + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + "change role"
+                                    + LogConstants.DIV + LogConstants.STATUS.FAILED + LogConstants.DIV + "code " + arg0);
                             Toast.makeText(mContext, "change to VideoMember failed", Toast.LENGTH_SHORT);
                         }
                     }

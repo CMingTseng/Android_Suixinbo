@@ -84,7 +84,7 @@ public class InitBusinessHelper {
             @Override
             public void onForceOffline() {
                 SxbLog.w(TAG, "onForceOffline->entered!");
-                SxbLog.d(TAG, LogConstants.ACTION_HOST_KICK + LogConstants.DIV + LogConstants.STEP.STEP1);
+                SxbLog.d(TAG, LogConstants.ACTION_HOST_KICK + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + "on force off line");
                 Toast.makeText(context, context.getString(R.string.tip_force_offline), Toast.LENGTH_SHORT).show();
                 context.sendBroadcast(new Intent(Constants.BD_EXIT_APP));
             }

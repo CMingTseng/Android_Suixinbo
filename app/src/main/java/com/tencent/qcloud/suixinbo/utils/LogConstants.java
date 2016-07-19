@@ -7,30 +7,18 @@ public class LogConstants {
 
     public static String DIV = "|";
 
-    public static String ACTION_HOST_CREATE_ROOM = "hostCreateRoom";
-    public static String ACTION_VIEWER_ENTER_ROOM = "viewerEnterRoom";
-    public static String ACTION_VIEWER_QUIT_ROOM = "viewerQuitRoom";
-    public static String ACTION_VIEWER_SHOW = "viewerShow";
-    public static String ACTION_VIEWER_UNSHOW = "viewerUnShow";
-    public static String ACTION_HOST_QUIT_ROOM = "hostQuitRoom";
-    public static String ACTION_HOST_KICK = "hostKick";
+    public static String ACTION_HOST_CREATE_ROOM = "clogs.host.createRoom";
+    public static String ACTION_VIEWER_ENTER_ROOM = "clogs.viewer.enterRoom";
+    public static String ACTION_VIEWER_QUIT_ROOM = "clogs.viewer.quitRoom";
+    public static String ACTION_VIEWER_SHOW = "clogs.viewer.upShow";
+    public static String ACTION_VIEWER_UNSHOW = "clogs.viewer.unShow";
+    public static String ACTION_HOST_QUIT_ROOM = "clogs.host.quitRoom";
+    public static String ACTION_HOST_KICK = "clogs.host.kick";
 
-    public enum STEP{
-        STEP1,
-        STEP2,
-        STEP3,
-        STEP4,
-        STEP5,
-        STEP6,
-        STEP7,
-        STEP8,
-        STEP9,
-        STEP10,
-        STEP11,
-        STEP12,
-        STEP13,
-        STEP14,
-        STEP15,
+
+    public enum STATUS{
+        SUCCEED,
+        FAILED,
     }
 
 

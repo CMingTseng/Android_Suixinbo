@@ -50,7 +50,7 @@ public class LoginHelper extends Presenter {
      * @param identify 用户id
      * @param userSig  用户签名
      */
-    public void imLogin(String identify, String userSig) {
+    public void imLogin(final String identify, String userSig) {
         TIMUser user = new TIMUser();
         user.setAccountType(String.valueOf(Constants.ACCOUNT_TYPE));
         user.setAppIdAt3rd(String.valueOf(Constants.SDK_APPID));
@@ -74,7 +74,7 @@ public class LoginHelper extends Presenter {
                     public void onSuccess() {
                         SxbLog.i(TAG, "keypath IMLogin succ !");
 //                        Toast.makeText(mContext, "IMLogin succ !", Toast.LENGTH_SHORT).show();
-                        SxbLog.d(TAG, LogConstants.ACTION_HOST_CREATE_ROOM + LogConstants.DIV + LogConstants.STEP.STEP1);
+                        SxbLog.d(TAG, LogConstants.ACTION_HOST_CREATE_ROOM + LogConstants.DIV + identify + LogConstants.DIV + "request room id");
                         getMyRoomNum();
                         startAVSDK();
                     }
@@ -195,7 +195,8 @@ public class LoginHelper extends Presenter {
                 }
             }).start();
         }else{
-            SxbLog.d(TAG, LogConstants.ACTION_HOST_CREATE_ROOM + LogConstants.DIV + LogConstants.STEP.STEP2);
+            SxbLog.d(TAG, LogConstants.ACTION_HOST_CREATE_ROOM + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + "request room id"
+                    + LogConstants.DIV + LogConstants.STATUS.SUCCEED + LogConstants.DIV + "get room id from local " + MySelfInfo.getInstance().getMyRoomNum());
         }
     }
 
