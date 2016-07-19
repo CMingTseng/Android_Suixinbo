@@ -22,6 +22,7 @@ import com.tencent.qcloud.suixinbo.model.LiveInfoJson;
 import com.tencent.qcloud.suixinbo.model.MySelfInfo;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.EnterQuiteRoomView;
 import com.tencent.qcloud.suixinbo.utils.Constants;
+import com.tencent.qcloud.suixinbo.utils.LogConstants;
 import com.tencent.qcloud.suixinbo.utils.SxbLog;
 
 import org.json.JSONException;
@@ -80,6 +81,8 @@ public class EnterLiveHelper extends Presenter {
         public void onEnterRoomComplete(int result) {
             SxbLog.i(TAG, "onEnterRoomComplete  PerformanceTest    " + SxbLog.getTime());
             if (result == 0) {
+                SxbLog.d(TAG, LogConstants.ACTION_HOST_CREATE_ROOM + LogConstants.DIV + LogConstants.STEP.STEP6);
+                SxbLog.d(TAG, LogConstants.ACTION_VIEWER_ENTER_ROOM + LogConstants.DIV + LogConstants.STEP.STEP6);
                 //只有进入房间后才能初始化AvView
                 isInAVRoom = true;
                 initAudioService();
@@ -93,6 +96,8 @@ public class EnterLiveHelper extends Presenter {
 
         // 离开房间成功回调
         public void onExitRoomComplete(int result) {
+            SxbLog.d(TAG, LogConstants.ACTION_VIEWER_QUIT_ROOM + LogConstants.DIV + LogConstants.STEP.STEP4);
+            SxbLog.d(TAG, LogConstants.ACTION_HOST_QUIT_ROOM + LogConstants.DIV + LogConstants.STEP.STEP4);
             isInAVRoom = false;
             quiteIMChatRoom();
             CurLiveInfo.setCurrentRequestCount(0);
@@ -127,6 +132,7 @@ public class EnterLiveHelper extends Presenter {
                     break;
                 case TYPE_MEMBER_CHANGE_NO_CAMERA_VIDEO:
                     {
+                        SxbLog.d(TAG, LogConstants.ACTION_VIEWER_UNSHOW + LogConstants.DIV + LogConstants.STEP.STEP4);
                         ArrayList<String> close_ids = new ArrayList<String>();
                         for (String id : updateList) {
                             close_ids.add(id);
@@ -175,6 +181,7 @@ public class EnterLiveHelper extends Presenter {
         final ArrayList<String> list = new ArrayList<String>();
         final String roomName = "this is a  test";
         SxbLog.i(TAG, "createlive createIMChatRoom " + MySelfInfo.getInstance().getMyRoomNum());
+        SxbLog.d(TAG, LogConstants.ACTION_HOST_CREATE_ROOM + LogConstants.DIV + LogConstants.STEP.STEP3);
         TIMGroupManager.getInstance().createGroup("AVChatRoom", list, roomName, "" + MySelfInfo.getInstance().getMyRoomNum(), new TIMValueCallBack<String>() {
             @Override
             public void onError(int i, String s) {
@@ -192,6 +199,7 @@ public class EnterLiveHelper extends Presenter {
 
             @Override
             public void onSuccess(String s) {
+                SxbLog.d(TAG, LogConstants.ACTION_HOST_CREATE_ROOM + LogConstants.DIV + LogConstants.STEP.STEP4);
                 isInChatRoom = true;
                 //创建AV房间
                 createAVRoom(MySelfInfo.getInstance().getMyRoomNum());
@@ -206,6 +214,7 @@ public class EnterLiveHelper extends Presenter {
      * 1_3创建一个AV房间
      */
     private void createAVRoom(int roomNum) {
+        SxbLog.d(TAG, LogConstants.ACTION_HOST_CREATE_ROOM + LogConstants.DIV + LogConstants.STEP.STEP5);
         EnterAVRoom(roomNum);
     }
 
@@ -254,8 +263,11 @@ public class EnterLiveHelper extends Presenter {
                     e.printStackTrace();
                 }
 
-                if (liveInfo != null)
+                if (liveInfo != null){
+                    SxbLog.d(TAG, LogConstants.ACTION_HOST_CREATE_ROOM + LogConstants.DIV + LogConstants.STEP.STEP7);
                     OKhttpHelper.getInstance().notifyServerNewLiveInfo(liveInfo);
+                }
+
             }
         }).start();
 
@@ -275,6 +287,7 @@ public class EnterLiveHelper extends Presenter {
      */
     private void joinIMChatRoom(int chatRoomId) {
         SxbLog.i(TAG, "joinLiveRoom joinIMChatRoom " + chatRoomId);
+        SxbLog.d(TAG, LogConstants.ACTION_VIEWER_ENTER_ROOM + LogConstants.DIV + LogConstants.STEP.STEP3);
         TIMGroupManager.getInstance().applyJoinGroup("" + chatRoomId, Constants.APPLY_CHATROOM + chatRoomId, new TIMCallBack() {
             @Override
             public void onError(int i, String s) {
@@ -292,6 +305,7 @@ public class EnterLiveHelper extends Presenter {
             @Override
             public void onSuccess() {
                 SxbLog.i(TAG, "joinLiveRoom joinIMChatRoom callback succ ");
+                SxbLog.d(TAG, LogConstants.ACTION_VIEWER_ENTER_ROOM + LogConstants.DIV + LogConstants.STEP.STEP4);
                 isInChatRoom = true;
                 joinAVRoom(CurLiveInfo.getRoomNum());
             }
@@ -305,6 +319,7 @@ public class EnterLiveHelper extends Presenter {
     private void joinAVRoom(int avRoomNum) {
 //        if (!mQavsdkControl.getIsInEnterRoom()) {
 //            initAudioService();
+        SxbLog.d(TAG, LogConstants.ACTION_VIEWER_ENTER_ROOM + LogConstants.DIV + LogConstants.STEP.STEP5);
         EnterAVRoom(avRoomNum);
 //        }
     }
@@ -355,6 +370,8 @@ public class EnterLiveHelper extends Presenter {
      */
     private void quiteAVRoom() {
         SxbLog.d(TAG, "quiteAVRoom ");
+        SxbLog.d(TAG, LogConstants.ACTION_VIEWER_QUIT_ROOM + LogConstants.DIV + LogConstants.STEP.STEP3);
+        SxbLog.d(TAG, LogConstants.ACTION_HOST_QUIT_ROOM + LogConstants.DIV + LogConstants.STEP.STEP3);
         if (isInAVRoom == true) {
             AVContext avContext = QavsdkControl.getInstance().getAVContext();
             int result = avContext.exitRoom();
@@ -376,6 +393,7 @@ public class EnterLiveHelper extends Presenter {
         if ((isInChatRoom == true)) {
             //主播解散群
             if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST) {
+                SxbLog.d(TAG, LogConstants.ACTION_HOST_QUIT_ROOM + LogConstants.DIV + LogConstants.STEP.STEP5);
                 TIMGroupManager.getInstance().deleteGroup("" + CurLiveInfo.getRoomNum(), new TIMCallBack() {
                     @Override
                     public void onError(int i, String s) {
@@ -383,12 +401,14 @@ public class EnterLiveHelper extends Presenter {
 
                     @Override
                     public void onSuccess() {
+                        SxbLog.d(TAG, LogConstants.ACTION_HOST_QUIT_ROOM + LogConstants.DIV + LogConstants.STEP.STEP6);
                         isInChatRoom = false;
                     }
                 });
                 TIMManager.getInstance().deleteConversation(TIMConversationType.Group, "" + MySelfInfo.getInstance().getMyRoomNum());
             } else {
                 //成员退出群
+                SxbLog.d(TAG, LogConstants.ACTION_VIEWER_QUIT_ROOM + LogConstants.DIV + LogConstants.STEP.STEP5);
                 TIMGroupManager.getInstance().quitGroup("" + CurLiveInfo.getRoomNum(), new TIMCallBack() {
                     @Override
                     public void onError(int i, String s) {
@@ -397,6 +417,7 @@ public class EnterLiveHelper extends Presenter {
 
                     @Override
                     public void onSuccess() {
+                        SxbLog.d(TAG, LogConstants.ACTION_VIEWER_QUIT_ROOM + LogConstants.DIV + LogConstants.STEP.STEP6);
                         SxbLog.i(TAG, "onSuccess ");
                         isInChatRoom = false;
                     }

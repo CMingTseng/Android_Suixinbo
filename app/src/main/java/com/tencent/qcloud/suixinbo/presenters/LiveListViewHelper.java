@@ -5,6 +5,8 @@ import android.os.AsyncTask;
 
 import com.tencent.qcloud.suixinbo.model.LiveInfoJson;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.LiveListView;
+import com.tencent.qcloud.suixinbo.utils.LogConstants;
+import com.tencent.qcloud.suixinbo.utils.SxbLog;
 
 import java.util.ArrayList;
 
@@ -12,6 +14,9 @@ import java.util.ArrayList;
  * 直播列表页Presenter
  */
 public class LiveListViewHelper extends Presenter {
+
+    private final static String TAG = "LiveListViewHelper";
+
     private LiveListView mLiveListView;
     private GetLiveListTask mGetLiveListTask;
 
@@ -40,11 +45,13 @@ public class LiveListViewHelper extends Presenter {
 
         @Override
         protected ArrayList<LiveInfoJson> doInBackground(Integer... params) {
+            SxbLog.d(TAG, LogConstants.ACTION_VIEWER_ENTER_ROOM + LogConstants.DIV + LogConstants.STEP.STEP1);
             return OKhttpHelper.getInstance().getLiveList(params[0], params[1]);
         }
 
         @Override
         protected void onPostExecute(ArrayList<LiveInfoJson> result) {
+            SxbLog.d(TAG, LogConstants.ACTION_VIEWER_ENTER_ROOM + LogConstants.DIV + LogConstants.STEP.STEP2);
             mLiveListView.showFirstPage(result);
         }
     }

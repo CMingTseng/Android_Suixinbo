@@ -36,6 +36,7 @@ import com.tencent.qcloud.suixinbo.model.MySelfInfo;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.LiveView;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.MembersDialogView;
 import com.tencent.qcloud.suixinbo.utils.Constants;
+import com.tencent.qcloud.suixinbo.utils.LogConstants;
 import com.tencent.qcloud.suixinbo.utils.SxbLog;
 
 import org.json.JSONException;
@@ -242,6 +243,7 @@ public class LiveHelper extends Presenter {
 
     private AVEndpoint.RequestViewListCompleteCallback mRequestViewListCompleteCallback = new AVEndpoint.RequestViewListCompleteCallback() {
         protected void OnComplete(String identifierList[], AVView viewList[], int count, int result) {
+            SxbLog.d(TAG, LogConstants.ACTION_VIEWER_SHOW + LogConstants.DIV + LogConstants.STEP.STEP6);
             for (String id : identifierList) {
                 mLiveView.showVideoView(REMOTE, id);
             }
@@ -348,6 +350,8 @@ public class LiveHelper extends Presenter {
 
     public void perpareQuitRoom(boolean bPurpose) {
         if (bPurpose) {
+            SxbLog.d(TAG, LogConstants.ACTION_VIEWER_QUIT_ROOM + LogConstants.DIV + LogConstants.STEP.STEP1);
+            SxbLog.d(TAG, LogConstants.ACTION_HOST_QUIT_ROOM + LogConstants.DIV + LogConstants.STEP.STEP1);
             sendGroupMessage(Constants.AVIMCMD_ExitLive, "", new TIMValueCallBack<TIMMessage>() {
                 @Override
                 public void onError(int i, String s) {
@@ -356,6 +360,8 @@ public class LiveHelper extends Presenter {
 
                 @Override
                 public void onSuccess(TIMMessage timMessage) {
+                    SxbLog.d(TAG, LogConstants.ACTION_VIEWER_QUIT_ROOM + LogConstants.DIV + LogConstants.STEP.STEP2);
+                    SxbLog.d(TAG, LogConstants.ACTION_HOST_QUIT_ROOM + LogConstants.DIV + LogConstants.STEP.STEP2);
                     notifyQuitReady();
                 }
             });
@@ -525,6 +531,7 @@ public class LiveHelper extends Presenter {
             int action = json.getInt(Constants.CMD_KEY);
             switch (action) {
                 case Constants.AVIMCMD_MUlTI_HOST_INVITE:
+                    SxbLog.d(TAG, LogConstants.ACTION_VIEWER_SHOW + LogConstants.DIV + LogConstants.STEP.STEP2);
                     mLiveView.showInviteDialog();
                     break;
                 case Constants.AVIMCMD_MUlTI_JOIN:
@@ -747,6 +754,7 @@ public class LiveHelper extends Presenter {
 
                 @Override
                 public void onSuccess(TIMAvManager.StreamRes streamRes) {
+                    SxbLog.d(TAG, LogConstants.ACTION_HOST_CREATE_ROOM + LogConstants.DIV + LogConstants.STEP.STEP11);
                     List<TIMAvManager.LiveUrl> liveUrls = streamRes.getUrls();
                     streamChannelID = streamRes.getChnlId();
                     mLiveView.pushStreamSucc(streamRes);
@@ -796,6 +804,7 @@ public class LiveHelper extends Presenter {
             @Override
             public void onSuccess() {
                 mLiveView.startRecordCallback(true);
+                SxbLog.d(TAG, LogConstants.ACTION_HOST_CREATE_ROOM + LogConstants.DIV + LogConstants.STEP.STEP9);
             }
         });
 
@@ -842,8 +851,12 @@ public class LiveHelper extends Presenter {
         changeAuthority(auth_bits, null, new AVRoomMulti.ChangeAuthorityCallback() {
             protected void onChangeAuthority(int retCode) {
                 SxbLog.i(TAG, "changeAuthority code " + retCode);
-                if (retCode == AVError.AV_OK)
+                if (retCode == AVError.AV_OK){
+                    SxbLog.d(TAG, LogConstants.ACTION_VIEWER_SHOW + LogConstants.DIV + LogConstants.STEP.STEP4);
+                    SxbLog.d(TAG, LogConstants.ACTION_VIEWER_UNSHOW + LogConstants.DIV + LogConstants.STEP.STEP2);
                     changeRole(role, leverChange);
+                }
+
             }
         });
     }
@@ -885,6 +898,7 @@ public class LiveHelper extends Presenter {
                                 openCameraAndMic();//打开摄像头
                                 sendC2CMessage(Constants.AVIMCMD_MUlTI_JOIN, "", CurLiveInfo.getHostID());//发送回应消息
                             } else {
+                                SxbLog.d(TAG, LogConstants.ACTION_VIEWER_UNSHOW + LogConstants.DIV + LogConstants.STEP.STEP3);
                                 closeCameraAndMic();
                             }
 

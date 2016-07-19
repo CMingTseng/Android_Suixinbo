@@ -11,6 +11,7 @@ import com.tencent.qcloud.suixinbo.model.MySelfInfo;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.LoginView;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.LogoutView;
 import com.tencent.qcloud.suixinbo.utils.Constants;
+import com.tencent.qcloud.suixinbo.utils.LogConstants;
 import com.tencent.qcloud.suixinbo.utils.SxbLog;
 
 import tencent.tls.platform.TLSErrInfo;
@@ -73,6 +74,7 @@ public class LoginHelper extends Presenter {
                     public void onSuccess() {
                         SxbLog.i(TAG, "keypath IMLogin succ !");
 //                        Toast.makeText(mContext, "IMLogin succ !", Toast.LENGTH_SHORT).show();
+                        SxbLog.d(TAG, LogConstants.ACTION_HOST_CREATE_ROOM + LogConstants.DIV + LogConstants.STEP.STEP1);
                         getMyRoomNum();
                         startAVSDK();
                     }
@@ -192,6 +194,8 @@ public class LoginHelper extends Presenter {
                     OKhttpHelper.getInstance().getMyRoomId(mContext);
                 }
             }).start();
+        }else{
+            SxbLog.d(TAG, LogConstants.ACTION_HOST_CREATE_ROOM + LogConstants.DIV + LogConstants.STEP.STEP2);
         }
     }
 

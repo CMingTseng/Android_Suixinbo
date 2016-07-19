@@ -7,6 +7,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.tencent.qcloud.suixinbo.model.LiveInfoJson;
 import com.tencent.qcloud.suixinbo.model.MySelfInfo;
+import com.tencent.qcloud.suixinbo.utils.LogConstants;
 import com.tencent.qcloud.suixinbo.utils.SxbLog;
 
 import org.json.JSONArray;
@@ -147,6 +148,7 @@ public class OKhttpHelper {
                 JSONObject data = reg_response.getJSONObject("data");
                 int id = data.getInt("avRoomId");
                 SxbLog.i(TAG, "getMyRoomId " + id);
+                SxbLog.d(TAG, LogConstants.ACTION_HOST_CREATE_ROOM + LogConstants.DIV + LogConstants.STEP.STEP2);
                 MySelfInfo.getInstance().setMyRoomNum(id);
                 MySelfInfo.getInstance().writeToCache(context.getApplicationContext());
             }

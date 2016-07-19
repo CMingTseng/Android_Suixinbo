@@ -59,6 +59,7 @@ import com.tencent.qcloud.suixinbo.presenters.viewinface.LiveView;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.ProfileView;
 import com.tencent.qcloud.suixinbo.utils.Constants;
 import com.tencent.qcloud.suixinbo.utils.GlideCircleTransform;
+import com.tencent.qcloud.suixinbo.utils.LogConstants;
 import com.tencent.qcloud.suixinbo.utils.SxbLog;
 import com.tencent.qcloud.suixinbo.utils.UIUtils;
 import com.tencent.qcloud.suixinbo.views.customviews.BaseActivity;
@@ -246,6 +247,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
                     }
                 }
                 //其他人一并获取
+                SxbLog.d(TAG, LogConstants.ACTION_VIEWER_SHOW + LogConstants.DIV + LogConstants.STEP.STEP5);
                 int requestCount = CurLiveInfo.getCurrentRequestCount();
                 mLiveHelper.requestViewList(ids);
                 requestCount = requestCount + ids.size();
@@ -670,6 +672,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
     public void quiteRoomComplete(int id_status, boolean succ, LiveInfoJson liveinfo) {
         if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST) {
             if ((getBaseContext() != null) && (null != mDetailDialog) && (mDetailDialog.isShowing() == false)) {
+                SxbLog.d(TAG, LogConstants.ACTION_HOST_QUIT_ROOM + LogConstants.DIV + LogConstants.STEP.STEP7);
                 mDetailTime.setText(formatTime);
                 mDetailAdmires.setText("" + CurLiveInfo.getAdmires());
                 mDetailWatchCount.setText("" + watchCount);
@@ -712,6 +715,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
      */
     @Override
     public void memberJoin(String id, String name) {
+        SxbLog.d(TAG, LogConstants.ACTION_VIEWER_ENTER_ROOM + LogConstants.DIV + LogConstants.STEP.STEP7);
         watchCount++;
         refreshTextListView(TextUtils.isEmpty(name) ? id : name, "join live", Constants.MEMBER_ENTER);
 
@@ -885,6 +889,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
 
     @Override
     public boolean showInviteView(String id) {
+        SxbLog.d(TAG, LogConstants.ACTION_VIEWER_SHOW + LogConstants.DIV + LogConstants.STEP.STEP1);
         int index = QavsdkControl.getInstance().getAvailableViewIndex(1);
         if (index == -1) {
             Toast.makeText(LiveActivity.this, "the invitation's upper limit is 3", Toast.LENGTH_SHORT).show();
@@ -996,6 +1001,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
         if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST) {
         } else {
             //TODO 主动下麦 下麦；
+            SxbLog.d(TAG, LogConstants.ACTION_VIEWER_UNSHOW + LogConstants.DIV + LogConstants.STEP.STEP1);
             mLiveHelper.changeAuthandRole(false, Constants.NORMAL_MEMBER_AUTH, Constants.NORMAL_MEMBER_ROLE);
 //            mLiveHelper.closeCameraAndMic();//是自己成员关闭
         }
@@ -1326,7 +1332,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
             public void onClick(View view) {
 //                mVideoMemberCtrlView.setVisibility(View.VISIBLE);
 //                mNomalMemberCtrView.setVisibility(View.INVISIBLE);
-
+                SxbLog.d(TAG, LogConstants.ACTION_VIEWER_SHOW + LogConstants.DIV + LogConstants.STEP.STEP3);
                 //上麦 ；TODO 上麦 上麦 上麦 ！！！！！；
                 mLiveHelper.changeAuthandRole(true, Constants.VIDEO_MEMBER_AUTH, Constants.VIDEO_MEMBER_ROLE);
                 inviteDg.dismiss();
@@ -1487,6 +1493,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
                     mStreamParam.setEncode(TIMAvManager.StreamEncode.RTMP);
                 }
 //                mStreamParam.setEncode(TIMAvManager.StreamEncode.HLS);
+                SxbLog.d(TAG, LogConstants.ACTION_HOST_CREATE_ROOM + LogConstants.DIV + LogConstants.STEP.STEP10);
                 mLiveHelper.pushAction(mStreamParam);
                 mPushDialog.dismiss();
             }
@@ -1620,7 +1627,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
         recordOk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                SxbLog.d(TAG, LogConstants.ACTION_HOST_CREATE_ROOM + LogConstants.DIV + LogConstants.STEP.STEP8);
                 filename = filenameEditText.getText().toString();
                 mRecordParam.setFilename(filename);
                 tags = tagEditText.getText().toString();
