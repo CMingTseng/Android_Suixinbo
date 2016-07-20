@@ -66,6 +66,7 @@ import com.tencent.qcloud.suixinbo.views.customviews.BaseActivity;
 import com.tencent.qcloud.suixinbo.views.customviews.HeartLayout;
 import com.tencent.qcloud.suixinbo.views.customviews.InputTextMsgDialog;
 import com.tencent.qcloud.suixinbo.views.customviews.MembersDialog;
+import com.tencent.qcloud.suixinbo.views.customviews.SpeedTestDialog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -1230,6 +1231,9 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
                 } else {
                     mLiveHelper.stopRecord();
                 }
+                break;
+            case R.id.speed_test_btn:
+                new SpeedTestDialog(this).start();
                 break;
 
         }

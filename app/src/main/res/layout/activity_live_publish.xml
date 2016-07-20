@@ -2,9 +2,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/colorLightGray"
-    android:orientation="vertical"
-    >
+    android:orientation="vertical">
     <RelativeLayout
         android:id="@+id/toppanel1"
         android:layout_width="match_parent"
@@ -134,10 +134,16 @@
                 android:onClick="onClick"
                 android:src="@drawable/btn_switch_off" />
         </RelativeLayout>
-        <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="1dp"
-            android:background="@color/colorGray2" />
+
+        <com.tencent.qcloud.suixinbo.views.customviews.LineControllerView
+            android:id="@+id/speed_test"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            app:name="@string/ping_speed_test"
+            app:isBottom="true"
+            app:canNav="true"
+            android:onClick="onClick"
+            />
 
 
         <RelativeLayout
@@ -176,6 +182,8 @@
                 android:onClick="onClick"
                 android:src="@drawable/btn_switch_off" />
         </RelativeLayout>
+
+
 
         <!--<TextView-->
             <!--android:layout_width="fill_parent"-->
