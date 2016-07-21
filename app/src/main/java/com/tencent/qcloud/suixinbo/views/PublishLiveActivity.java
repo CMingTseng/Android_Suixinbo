@@ -33,6 +33,7 @@ import com.tencent.qcloud.suixinbo.utils.SxbLog;
 import com.tencent.qcloud.suixinbo.utils.UIUtils;
 import com.tencent.qcloud.suixinbo.views.customviews.BaseActivity;
 import com.tencent.qcloud.suixinbo.views.customviews.CustomSwitch;
+import com.tencent.qcloud.suixinbo.views.customviews.SpeedTestDialog;
 
 import java.io.File;
 import java.io.IOException;
@@ -133,6 +134,9 @@ public class PublishLiveActivity extends BaseActivity implements View.OnClickLis
                         }
                     }
                 }
+                break;
+            case R.id.speed_test:
+                new SpeedTestDialog(this).start();
                 break;
         }
     }

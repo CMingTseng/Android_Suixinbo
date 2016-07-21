@@ -7,6 +7,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.tencent.qcloud.suixinbo.model.LiveInfoJson;
 import com.tencent.qcloud.suixinbo.model.MySelfInfo;
+import com.tencent.qcloud.suixinbo.utils.LogConstants;
 import com.tencent.qcloud.suixinbo.utils.SxbLog;
 
 import org.json.JSONArray;
@@ -147,12 +148,17 @@ public class OKhttpHelper {
                 JSONObject data = reg_response.getJSONObject("data");
                 int id = data.getInt("avRoomId");
                 SxbLog.i(TAG, "getMyRoomId " + id);
+                SxbLog.d(TAG, LogConstants.ACTION_HOST_CREATE_ROOM + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + "request room id"
+                        + LogConstants.DIV + LogConstants.STATUS.SUCCEED + LogConstants.DIV + "get room id from local " + MySelfInfo.getInstance().getMyRoomNum());
                 MySelfInfo.getInstance().setMyRoomNum(id);
                 MySelfInfo.getInstance().writeToCache(context.getApplicationContext());
+            }else{
+                SxbLog.d(TAG, LogConstants.ACTION_HOST_CREATE_ROOM + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + "request room id"
+                        + LogConstants.DIV + LogConstants.STATUS.FAILED + LogConstants.DIV + "error code " + ret);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
+        } catch (IOException | JSONException e) {
+            SxbLog.d(TAG, LogConstants.ACTION_HOST_CREATE_ROOM + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + "request room id"
+                    + LogConstants.DIV + LogConstants.STATUS.FAILED + LogConstants.DIV + "exception " + e);
             e.printStackTrace();
         }
     }

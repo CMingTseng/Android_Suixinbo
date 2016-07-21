@@ -3,6 +3,7 @@ package com.tencent.qcloud.suixinbo.views.customviews;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -14,6 +15,7 @@ import com.tencent.av.ServerInfo;
 import com.tencent.av.TIMAvManager;
 import com.tencent.av.TIMPingCallBack;
 import com.tencent.qcloud.suixinbo.R;
+import com.tencent.qcloud.suixinbo.utils.SxbLog;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -30,15 +32,28 @@ public class SpeedTestDialog {
     NumberFormat percentFormat = NumberFormat.getPercentInstance();
     private Context context;
     private List<PingResult> results = new ArrayList<>();
+    private List<ServerInfo> totalServer = new ArrayList<>();
+    private List<ServerInfo> doneServer = new ArrayList<>();
     private final int MSG_START = 1;
     private final int MSG_PROGRESS =2;
     private final int MSG_END = 3;
+    private final int MSG_STOP = 4;
     private Handler handler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what){
                 case MSG_START:
-                    pd = ProgressDialog.show(context, context.getString(R.string.ping_ing), context.getString(R.string.ping_start));
+                    pd = new ProgressDialog(context);
+                    pd.setTitle(context.getString(R.string.ping_ing));
+                    pd.setCancelable(false);
+                    pd.setMessage(context.getString(R.string.ping_start));
+                    pd.setButton(DialogInterface.BUTTON_NEGATIVE, context.getString(R.string.ping_cancel), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            stop();
+                        }
+                    });
+                    pd.show();
                     break;
                 case MSG_PROGRESS:
                     String pdMsg = msg.getData().getString("msg");
@@ -54,6 +69,9 @@ public class SpeedTestDialog {
                     }
                     new AlertDialog.Builder(context).setMessage(resultStr.toString()).show();
                     break;
+                case MSG_STOP:
+                    pd.dismiss();
+                    break;
             }
         }
     };
@@ -65,7 +83,7 @@ public class SpeedTestDialog {
     }
 
     public void start(){
-        TIMAvManager.getInstance().requestSpeedTest((short) 7, (short) 6, 0, new TIMPingCallBack() {
+        TIMAvManager.getInstance().requestSpeedTest(new TIMPingCallBack() {
             @Override
             public void onError(int code, String desc) {
                 Log.e(TAG, "ping failed. code: " + code + " desc: " + desc);
@@ -80,10 +98,20 @@ public class SpeedTestDialog {
 
             @Override
             public void onProgress(ServerInfo serverInfo, int totalPkg, int currentPkg) {
+                boolean hasDone = false;
+                for (ServerInfo info : doneServer) {
+                    if (serverInfo.ip.equals(info.ip)) {
+                        hasDone = true;
+                        break;
+                    }
+                }
+                if (!hasDone) {
+                    doneServer.add(serverInfo);
+                }
                 Message message = new Message();
                 message.what = MSG_PROGRESS;
                 Bundle bundle = new Bundle();
-                bundle.putString("msg", serverInfo.ip.toString() + context.getString(R.string.ping_progress) + " " + currentPkg + "/" + totalPkg);
+                bundle.putString("msg", serverInfo.ip.toString() + "(" + doneServer.size() + "/" + totalServer.size() + ")\n" + context.getString(R.string.ping_progress) + " " + currentPkg + "/" + totalPkg);
                 message.setData(bundle);
                 handler.sendMessage(message);
             }
@@ -91,11 +119,12 @@ public class SpeedTestDialog {
             @Override
             public void onStart(List<ServerInfo> serverInfoList) {
                 Log.d(TAG, "start test " + serverInfoList.size() + " ip");
-                if (serverInfoList.size() > 0){
+                if (serverInfoList.size() > 0) {
+                    totalServer.addAll(serverInfoList);
                     Message message = new Message();
                     message.what = MSG_START;
                     handler.sendMessage(message);
-                }else{
+                } else {
                     Toast.makeText(context, context.getString(R.string.ping_no_server), Toast.LENGTH_SHORT).show();
                 }
 
@@ -108,6 +137,14 @@ public class SpeedTestDialog {
                 handler.sendMessage(message);
             }
         });
+    }
+
+    public void stop(){
+        SxbLog.d(TAG, "stop speed test");
+        TIMAvManager.getInstance().requestSpeedTestStop();
+        Message message = new Message();
+        message.what = MSG_STOP;
+        handler.sendMessage(message);
     }
 
     public List<PingResult> getResults() {
