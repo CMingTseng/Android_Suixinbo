@@ -45,7 +45,8 @@ public class LiveListViewHelper extends Presenter {
 
         @Override
         protected void onPostExecute(ArrayList<LiveInfoJson> result) {
-            mLiveListView.showFirstPage(result);
+            if (mLiveListView != null)
+                mLiveListView.showFirstPage(result);
         }
     }
 
