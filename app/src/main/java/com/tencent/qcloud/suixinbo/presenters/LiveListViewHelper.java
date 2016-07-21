@@ -52,11 +52,10 @@ public class LiveListViewHelper extends Presenter {
 
         @Override
         protected void onPostExecute(ArrayList<LiveInfoJson> result) {
-            if (mLiveListView != null)
-                mLiveListView.showFirstPage(result);
             SxbLog.d(TAG, LogConstants.ACTION_VIEWER_ENTER_ROOM + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + "request room list"
                     + LogConstants.DIV + LogConstants.STATUS.SUCCEED + LogConstants.DIV + "get list size " + result.size());
-            mLiveListView.showFirstPage(result);
+            if (mLiveListView != null)
+                mLiveListView.showFirstPage(result);
         }
     }
 
