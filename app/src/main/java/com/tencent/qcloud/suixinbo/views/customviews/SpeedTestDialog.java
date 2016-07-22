@@ -63,7 +63,7 @@ public class SpeedTestDialog {
                     pd.dismiss();
                     StringBuilder resultStr = new StringBuilder();
                     for (PingResult result : results){
-                        resultStr.append(result.getServer().ip);
+                        resultStr.append(serverInfoToString(result.getServer()));
                         resultStr.append(context.getString(R.string.ping_time) + result.getUseTime() + "ms ");
                         resultStr.append(context.getString(R.string.ping_miss) + percentFormat.format((double)(result.getTotalPkg() - result.getReceivePkg())/(double)result.getTotalPkg()) + "\n");
                     }
@@ -111,7 +111,8 @@ public class SpeedTestDialog {
                 Message message = new Message();
                 message.what = MSG_PROGRESS;
                 Bundle bundle = new Bundle();
-                bundle.putString("msg", serverInfo.ip.toString() + "(" + doneServer.size() + "/" + totalServer.size() + ")\n" + context.getString(R.string.ping_progress) + " " + currentPkg + "/" + totalPkg);
+
+                bundle.putString("msg", serverInfoToString(serverInfo) + "(" + doneServer.size() + "/" + totalServer.size() + ")\n" + context.getString(R.string.ping_progress) + " " + currentPkg + "/" + totalPkg);
                 message.setData(bundle);
                 handler.sendMessage(message);
             }
@@ -149,5 +150,47 @@ public class SpeedTestDialog {
 
     public List<PingResult> getResults() {
         return results;
+    }
+
+    private String serverInfoToString(ServerInfo info){
+        StringBuilder str = new StringBuilder();
+        switch (info.idc){
+            case SH:
+                str.append(context.getString(R.string.ping_SH));
+                break;
+            case SZ:
+                str.append(context.getString(R.string.ping_SZ));
+                break;
+            case CD:
+                str.append(context.getString(R.string.ping_CD));
+                break;
+            case TJ:
+                str.append(context.getString(R.string.ping_TJ));
+                break;
+            case NJ:
+                str.append(context.getString(R.string.ping_NJ));
+                break;
+            case HZ:
+                str.append(context.getString(R.string.ping_HZ));
+                break;
+            case GZ:
+                str.append(context.getString(R.string.ping_GZ));
+                break;
+
+        }
+        str.append(" ");
+        switch (info.isp){
+            case TEL:
+                str.append(context.getString(R.string.ping_TEL));
+                break;
+            case CNC:
+                str.append(context.getString(R.string.ping_CNC));
+                break;
+            case CMCC:
+                str.append(context.getString(R.string.ping_CMCC));
+                break;
+        }
+        return str.toString();
+
     }
 }
