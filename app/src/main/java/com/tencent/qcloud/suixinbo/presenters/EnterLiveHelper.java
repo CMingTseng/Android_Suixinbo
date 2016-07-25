@@ -79,31 +79,25 @@ public class EnterLiveHelper extends Presenter {
     private AVRoomMulti.Delegate mRoomDelegate = new AVRoomMulti.Delegate() {
         // 创建房间成功回调
         public void onEnterRoomComplete(int result) {
-            SxbLog.i(TAG, "onEnterRoomComplete  PerformanceTest    " + SxbLog.getTime());
             if (result == 0) {
-                SxbLog.d(TAG, LogConstants.ACTION_HOST_CREATE_ROOM + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + "create av room"
-                        + LogConstants.DIV + LogConstants.STATUS.SUCCEED + LogConstants.DIV + "room id " + MySelfInfo.getInstance().getMyRoomNum());
-                SxbLog.d(TAG, LogConstants.ACTION_VIEWER_ENTER_ROOM + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + "join av room" +
-                        LogConstants.DIV + LogConstants.STATUS.SUCCEED + LogConstants.DIV + "room id " + MySelfInfo.getInstance().getMyRoomNum());
+                SxbLog.standardEnterRoomLog(TAG, "enterAVRoom", "" + LogConstants.STATUS.SUCCEED, "room id" + MySelfInfo.getInstance().getMyRoomNum());
+
                 //只有进入房间后才能初始化AvView
                 isInAVRoom = true;
                 initAudioService();
                 mStepInOutView.enterRoomComplete(MySelfInfo.getInstance().getIdStatus(), true);
             } else {
-//                mStepInOutView.enterRoomComplete(MySelfInfo.getInstance().getIdStatus(), false);
                 quiteAVRoom();
-                SxbLog.d(TAG, LogConstants.ACTION_HOST_CREATE_ROOM + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + "create av room"
-                        + LogConstants.DIV + LogConstants.STATUS.FAILED + LogConstants.DIV + "error code " + result);
+                SxbLog.standardEnterRoomLog(TAG, "enterAVRoom", "" + LogConstants.STATUS.FAILED, "result " + result);
             }
 
         }
 
         // 离开房间成功回调
         public void onExitRoomComplete(int result) {
-            SxbLog.d(TAG, LogConstants.ACTION_VIEWER_QUIT_ROOM + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + "quit av room"
-                    + LogConstants.DIV + LogConstants.STATUS.SUCCEED + LogConstants.DIV + "result " + result);
-            SxbLog.d(TAG, LogConstants.ACTION_HOST_QUIT_ROOM + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + "quit av room"
-                    + LogConstants.DIV + LogConstants.STATUS.SUCCEED + LogConstants.DIV + "result " + result);
+            if (result == 0)
+                SxbLog.standardQuiteRoomLog(TAG, "exitRoom", "" + LogConstants.STATUS.SUCCEED, "result " + result);
+
             isInAVRoom = false;
             quiteIMChatRoom();
             CurLiveInfo.setCurrentRequestCount(0);
@@ -112,7 +106,6 @@ public class EnterLiveHelper extends Presenter {
             notifyServerLiveEnd();
             if (mStepInOutView != null)
                 mStepInOutView.quiteRoomComplete(MySelfInfo.getInstance().getIdStatus(), true, null);
-            SxbLog.d(TAG, "WL_DEBUG mRoomDelegate.onExitRoomComplete result = " + result);
 
         }
 
@@ -136,22 +129,23 @@ public class EnterLiveHelper extends Presenter {
                     intent.putStringArrayListExtra("ids", video_ids);
                     mContext.sendBroadcast(intent);
                     break;
-                case TYPE_MEMBER_CHANGE_NO_CAMERA_VIDEO:
-                    {
+                case TYPE_MEMBER_CHANGE_NO_CAMERA_VIDEO: {
 
-                        ArrayList<String> close_ids = new ArrayList<String>();
-                        String ids = "";
-                        for (String id : updateList) {
-                            close_ids.add(id);
-                            ids = ids + " " +  id;
-                        }
-//                        SxbLog.d(TAG, LogConstants.ACTION_VIEWER_UNSHOW + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + "close camera callback"
-//                                + LogConstants.DIV + LogConstants.STATUS.SUCCEED + LogConstants.DIV + "close ids " + ids);
-                        Intent closeintent = new Intent(Constants.ACTION_CAMERA_CLOSE_IN_LIVE);
-                        closeintent.putStringArrayListExtra("ids", close_ids);
-                        mContext.sendBroadcast(closeintent);
+                    ArrayList<String> close_ids = new ArrayList<String>();
+                    String ids = "";
+                    for (String id : updateList) {
+                        close_ids.add(id);
+                        ids = ids + " " + id;
+
                     }
-                    break;
+
+                    SxbLog.d(TAG, LogConstants.ACTION_VIEWER_UNSHOW + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + "close camera callback"
+                            + LogConstants.DIV + LogConstants.STATUS.SUCCEED + LogConstants.DIV + "close ids " + ids);
+                    Intent closeintent = new Intent(Constants.ACTION_CAMERA_CLOSE_IN_LIVE);
+                    closeintent.putStringArrayListExtra("ids", close_ids);
+                    mContext.sendBroadcast(closeintent);
+                }
+                break;
                 case TYPE_MEMBER_CHANGE_HAS_AUDIO:
                     break;
 
@@ -190,14 +184,9 @@ public class EnterLiveHelper extends Presenter {
     private void createIMChatRoom() {
         final ArrayList<String> list = new ArrayList<String>();
         final String roomName = "this is a  test";
-        SxbLog.i(TAG, "createlive createIMChatRoom " + MySelfInfo.getInstance().getMyRoomNum());
-        SxbLog.d(TAG, LogConstants.ACTION_HOST_CREATE_ROOM + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + "create live im group"
-                + LogConstants.DIV + "group id " + MySelfInfo.getInstance().getMyRoomNum());
         TIMGroupManager.getInstance().createGroup("AVChatRoom", list, roomName, "" + MySelfInfo.getInstance().getMyRoomNum(), new TIMValueCallBack<String>() {
             @Override
             public void onError(int i, String s) {
-                SxbLog.d(TAG, LogConstants.ACTION_HOST_CREATE_ROOM + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + "create live im group"
-                        + LogConstants.DIV + LogConstants.STATUS.FAILED + LogConstants.DIV + "code：" + i + " msg:" + s);
                 SxbLog.i(TAG, "onError " + i + "   " + s);
                 //已在房间中,重复进入房间
                 if (i == 10025) {
@@ -206,14 +195,14 @@ public class EnterLiveHelper extends Presenter {
                     return;
                 }
                 // 创建IM房间失败，提示失败原因，并关闭等待对话框
-                Toast.makeText(mContext, " chatroom  error " + s + "i " + i, Toast.LENGTH_SHORT).show();
+                SxbLog.standardEnterRoomLog(TAG, "create live im group", "" + LogConstants.STATUS.FAILED, "code：" + i + " msg:" + s);
+                Toast.makeText(mContext, "create IM room fail " + s + " " + i, Toast.LENGTH_SHORT).show();
                 quiteLive();
             }
 
             @Override
             public void onSuccess(String s) {
-                SxbLog.d(TAG, LogConstants.ACTION_HOST_CREATE_ROOM + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + "create live im group"
-                        + LogConstants.DIV + LogConstants.STATUS.SUCCEED + LogConstants.DIV + "group id " + MySelfInfo.getInstance().getMyRoomNum());
+                SxbLog.standardEnterRoomLog(TAG, "create live im group", "" + LogConstants.STATUS.SUCCEED, "group id " + MySelfInfo.getInstance().getMyRoomNum());
                 isInChatRoom = true;
                 //创建AV房间
                 createAVRoom(MySelfInfo.getInstance().getMyRoomNum());
@@ -228,8 +217,7 @@ public class EnterLiveHelper extends Presenter {
      * 1_3创建一个AV房间
      */
     private void createAVRoom(int roomNum) {
-        SxbLog.d(TAG, LogConstants.ACTION_HOST_CREATE_ROOM + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + "create av room"
-                + LogConstants.DIV + "room id " + MySelfInfo.getInstance().getMyRoomNum());
+        SxbLog.standardEnterRoomLog(TAG, "create av room", "", "room id " + MySelfInfo.getInstance().getMyRoomNum());
         EnterAVRoom(roomNum);
     }
 
@@ -278,9 +266,8 @@ public class EnterLiveHelper extends Presenter {
                     e.printStackTrace();
                 }
 
-                if (liveInfo != null){
-                    SxbLog.d(TAG, LogConstants.ACTION_HOST_CREATE_ROOM + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + "upload room info to server"
-                            + LogConstants.DIV + "room id " + CurLiveInfo.getRoomNum());
+                if (liveInfo != null) {
+                    SxbLog.standardEnterRoomLog(TAG, "upload room info to serve", "", "room id " + CurLiveInfo.getRoomNum());
                     OKhttpHelper.getInstance().notifyServerNewLiveInfo(liveInfo);
                 }
 
@@ -302,20 +289,18 @@ public class EnterLiveHelper extends Presenter {
      * 2_2加入一个聊天室
      */
     private void joinIMChatRoom(final int chatRoomId) {
-        SxbLog.i(TAG, "joinLiveRoom joinIMChatRoom " + chatRoomId);
-        SxbLog.d(TAG, LogConstants.ACTION_VIEWER_ENTER_ROOM + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + "join im chat room" +
-                LogConstants.DIV + "room id " + chatRoomId);
+        SxbLog.standardEnterRoomLog(TAG, "join im chat room", "", "room id " + chatRoomId);
+
         TIMGroupManager.getInstance().applyJoinGroup("" + chatRoomId, Constants.APPLY_CHATROOM + chatRoomId, new TIMCallBack() {
             @Override
             public void onError(int i, String s) {
-                SxbLog.d(TAG, LogConstants.ACTION_VIEWER_ENTER_ROOM + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + "join im chat room" +
-                        LogConstants.DIV + LogConstants.STATUS.FAILED + LogConstants.DIV + "code:" + i + " msg:" + s);
                 //已经在是成员了
                 if (i == Constants.IS_ALREADY_MEMBER) {
                     SxbLog.i(TAG, "joinLiveRoom joinIMChatRoom callback succ ");
                     joinAVRoom(CurLiveInfo.getRoomNum());
                     isInChatRoom = true;
                 } else {
+                    SxbLog.standardEnterRoomLog(TAG, "join im chat room", "" + LogConstants.STATUS.FAILED, "code:" + i + " msg:" + s);
                     Toast.makeText(mContext, "join IM room fail " + s + " " + i, Toast.LENGTH_SHORT).show();
                     quiteLive();
                 }
@@ -323,9 +308,7 @@ public class EnterLiveHelper extends Presenter {
 
             @Override
             public void onSuccess() {
-                SxbLog.i(TAG, "joinLiveRoom joinIMChatRoom callback succ ");
-                SxbLog.d(TAG, LogConstants.ACTION_VIEWER_ENTER_ROOM + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + "join im chat room" +
-                        LogConstants.DIV + LogConstants.STATUS.SUCCEED + LogConstants.DIV + "room id " + chatRoomId);
+                SxbLog.standardEnterRoomLog(TAG, "join im chat room", "" + LogConstants.STATUS.FAILED, "room id " + chatRoomId);
                 isInChatRoom = true;
                 joinAVRoom(CurLiveInfo.getRoomNum());
             }
@@ -337,10 +320,7 @@ public class EnterLiveHelper extends Presenter {
      * 2_2加入一个AV房间
      */
     private void joinAVRoom(int avRoomNum) {
-//        if (!mQavsdkControl.getIsInEnterRoom()) {
-//            initAudioService();
-        SxbLog.d(TAG, LogConstants.ACTION_VIEWER_ENTER_ROOM + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + "join av room" +
-                LogConstants.DIV + "room id " + avRoomNum);
+        SxbLog.standardEnterRoomLog(TAG, "join av room", "", "AV room id " + avRoomNum);
         EnterAVRoom(avRoomNum);
 //        }
     }
@@ -390,8 +370,8 @@ public class EnterLiveHelper extends Presenter {
      * 退出一个AV房间
      */
     private void quiteAVRoom() {
-        SxbLog.d(TAG, LogConstants.ACTION_VIEWER_QUIT_ROOM + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + "quit av room");
-        SxbLog.d(TAG, LogConstants.ACTION_HOST_QUIT_ROOM + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + "quit av room");
+        SxbLog.standardQuiteRoomLog(TAG, "quit av room", "", "");
+
         if (isInAVRoom == true) {
             AVContext avContext = QavsdkControl.getInstance().getAVContext();
             int result = avContext.exitRoom();
@@ -413,40 +393,30 @@ public class EnterLiveHelper extends Presenter {
         if ((isInChatRoom == true)) {
             //主播解散群
             if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST) {
-                SxbLog.d(TAG, LogConstants.ACTION_HOST_QUIT_ROOM + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + "quit im room" +
-                    LogConstants.DIV + "room id " + CurLiveInfo.getRoomNum());
                 TIMGroupManager.getInstance().deleteGroup("" + CurLiveInfo.getRoomNum(), new TIMCallBack() {
                     @Override
                     public void onError(int i, String s) {
-                        SxbLog.d(TAG, LogConstants.ACTION_HOST_QUIT_ROOM + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + "quit im room"
-                                + LogConstants.DIV + LogConstants.STATUS.FAILED + LogConstants.DIV + "code:" + i + " msg:" + s);
+                        SxbLog.standardQuiteRoomLog(TAG, "delete im room", "" + LogConstants.STATUS.FAILED, "code:" + i + " msg:" + s);
                     }
 
                     @Override
                     public void onSuccess() {
-                        SxbLog.d(TAG, LogConstants.ACTION_HOST_QUIT_ROOM + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + "quit im room"
-                                + LogConstants.DIV + LogConstants.STATUS.SUCCEED + LogConstants.DIV + "room id " + CurLiveInfo.getRoomNum());
+                        SxbLog.standardQuiteRoomLog(TAG, "delete im room", "" + LogConstants.STATUS.SUCCEED, "room id " + CurLiveInfo.getRoomNum());
                         isInChatRoom = false;
                     }
                 });
                 TIMManager.getInstance().deleteConversation(TIMConversationType.Group, "" + MySelfInfo.getInstance().getMyRoomNum());
             } else {
                 //成员退出群
-                SxbLog.d(TAG, LogConstants.ACTION_VIEWER_QUIT_ROOM + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + "quit im group" +
-                    LogConstants.DIV + "group id " + CurLiveInfo.getRoomNum());
                 TIMGroupManager.getInstance().quitGroup("" + CurLiveInfo.getRoomNum(), new TIMCallBack() {
                     @Override
                     public void onError(int i, String s) {
-                        SxbLog.d(TAG, LogConstants.ACTION_VIEWER_QUIT_ROOM + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + "quit im group" +
-                                LogConstants.DIV + LogConstants.STATUS.FAILED +
-                                LogConstants.DIV + "code:" + i + " msg:" + s);
+                        SxbLog.standardQuiteRoomLog(TAG, "quite im room", "" + LogConstants.STATUS.FAILED, "code:" + i + " msg:" + s);
                     }
 
                     @Override
                     public void onSuccess() {
-                        SxbLog.d(TAG, LogConstants.ACTION_VIEWER_QUIT_ROOM + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + "quit im group" +
-                                LogConstants.DIV + LogConstants.STATUS.SUCCEED +
-                                LogConstants.DIV + "group id " + CurLiveInfo.getRoomNum());
+                        SxbLog.standardQuiteRoomLog(TAG, "quite im room", "" + LogConstants.STATUS.SUCCEED, "room id " + CurLiveInfo.getRoomNum());
                         isInChatRoom = false;
                     }
                 });

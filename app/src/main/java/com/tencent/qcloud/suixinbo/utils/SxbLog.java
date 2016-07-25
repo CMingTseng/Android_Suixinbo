@@ -2,6 +2,8 @@ package com.tencent.qcloud.suixinbo.utils;
 
 import android.util.Log;
 
+import com.tencent.qcloud.suixinbo.model.MySelfInfo;
+
 import java.util.Calendar;
 
 /**
@@ -15,6 +17,16 @@ public class SxbLog {
         DEBUG,
         INFO
     }
+
+
+    public static String ACTION_HOST_CREATE_ROOM = "clogs.host.createRoom";
+    public static String ACTION_VIEWER_ENTER_ROOM = "clogs.viewer.enterRoom";
+    public static String ACTION_VIEWER_QUIT_ROOM = "clogs.viewer.quitRoom";
+    public static String ACTION_HOST_QUIT_ROOM = "clogs.host.quitRoom";
+    public static String ACTION_VIEWER_SHOW = "clogs.viewer.upShow";
+    public static String ACTION_VIEWER_UNSHOW = "clogs.viewer.unShow";
+    public static String ACTION_HOST_KICK = "clogs.host.kick";
+
 
     static private SxbLogLevel level = SxbLogLevel.INFO;
 
@@ -83,4 +95,42 @@ public class SxbLog {
         String time = calendar.get(Calendar.MINUTE) + ":" + calendar.get(Calendar.SECOND) + ":" + calendar.get(Calendar.MILLISECOND);
         return time;
     }
+
+    public static void standardEnterRoomLog(String TAG, String info, String success, String info2) {
+        if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST) {
+            SxbLog.d(TAG, LogConstants.ACTION_HOST_CREATE_ROOM + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + info
+                    + LogConstants.DIV + success + LogConstants.DIV + info2);
+        } else {
+            SxbLog.d(TAG, LogConstants.ACTION_VIEWER_ENTER_ROOM + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + info +
+                    LogConstants.DIV + success + LogConstants.DIV + info2);
+        }
+    }
+
+
+    public static void standardQuiteRoomLog(String TAG, String info, String success, String info2) {
+        if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST) {
+            SxbLog.d(TAG, LogConstants.ACTION_HOST_QUIT_ROOM + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + info
+                    + LogConstants.DIV + success + LogConstants.DIV + info2);
+        } else {
+            SxbLog.d(TAG, LogConstants.ACTION_VIEWER_QUIT_ROOM + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + info +
+                    LogConstants.DIV + success + LogConstants.DIV + info2);
+        }
+    }
+
+    public static void standardShowLog(String TAG, String info, String success, String info2) {
+        if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST) {
+            SxbLog.d(TAG, LogConstants.ACTION_VIEWER_UNSHOW + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + "close camera callback"
+                    + LogConstants.DIV + LogConstants.STATUS.SUCCEED + LogConstants.DIV + "close ids " + ids);
+        } else {
+            SxbLog.d(TAG, LogConstants.ACTION_VIEWER_ENTER_ROOM + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + info +
+                    LogConstants.DIV + success + LogConstants.DIV + info2);
+        }
+    }
+
+
+    public static void standardLog(String TAG, String type, String info, String success, String info2) {
+        SxbLog.d(TAG, LogConstants.ACTION_HOST_CREATE_ROOM + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + info
+                + LogConstants.DIV + success + LogConstants.DIV + info2);
+    }
+
 }
