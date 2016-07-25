@@ -50,52 +50,51 @@
             android:text="1231231" />
 
 
-        <TextView
-            android:id="@+id/param_video"
-            android:layout_width="30dp"
-            android:layout_height="20dp"
-            android:layout_gravity="top|left"
-            android:layout_marginLeft="200dp"
-            android:layout_marginTop="30dp"
-            android:background="@drawable/btn_par" />
+        <LinearLayout
+            android:layout_marginTop="60dp"
+            android:gravity="right"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                style="@style/live_btn"
+                android:id="@+id/param_video"
+                android:layout_marginRight="20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/live_btn_par" />
 
 
-        <TextView
-            android:id="@+id/push_btn"
-            android:layout_width="40dp"
-            android:layout_height="20dp"
-            android:layout_gravity="top|left"
-            android:layout_marginLeft="240dp"
-            android:visibility="invisible"
-            android:layout_marginTop="30dp"
-            android:background="@drawable/icon_push_stream"
-            />
+            <TextView
+                style="@style/live_btn"
+                android:id="@+id/push_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="20dp"
+                android:visibility="gone"
+                android:text="@string/live_btn_push"
+                />
 
-        <TextView
-            android:id="@+id/speed_test_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="140dp"
-            android:layout_marginTop="30dp"
-            android:textColor="@color/white"
-            android:textSize="12sp"
-            android:onClick="onClick"
-            android:text="@string/ping_speed_test"
-            />
+            <TextView
+                style="@style/live_btn"
+                android:id="@+id/speed_test_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="20dp"
+                android:text="@string/ping_speed_test"
+                />
 
 
-        <TextView
-            android:id="@+id/record_btn"
-            android:layout_width="30dp"
-            android:layout_height="20dp"
-            android:layout_gravity="top|left"
-            android:layout_marginLeft="290dp"
-            android:visibility="invisible"
-            android:layout_marginTop="30dp"
-            android:background="@drawable/icon_record"
-            android:gravity="center"
-            android:textSize="14sp" />
-
+            <TextView
+                style="@style/live_btn"
+                android:id="@+id/record_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="20dp"
+                android:visibility="gone"
+                android:text="@string/live_btn_record"
+                android:gravity="center" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/video_interact"

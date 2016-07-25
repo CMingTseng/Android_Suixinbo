@@ -337,7 +337,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
     private FrameLayout mFullControllerUi, mBackgound;
     private SeekBar mBeautyBar;
     private int mBeautyRate, mWhiteRate;
-    private TextView pushBtn, recordBtn;
+    private TextView pushBtn, recordBtn, speedBtn;
 
     private void showHeadIcon(ImageView view, String avatar) {
         if (TextUtils.isEmpty(avatar)) {
@@ -367,6 +367,9 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
         mHostNameTv = (TextView) findViewById(R.id.host_name);
         tvMembers = (TextView) findViewById(R.id.member_counts);
         tvAdmires = (TextView) findViewById(R.id.heart_counts);
+
+        speedBtn = (TextView)findViewById(R.id.speed_test_btn);
+        speedBtn.setOnClickListener(this);
 
         BtnCtrlVideo = (TextView) findViewById(R.id.camera_controll);
         BtnCtrlMic = (TextView) findViewById(R.id.mic_controll);
@@ -1536,7 +1539,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
     public void pushStreamSucc(TIMAvManager.StreamRes streamRes) {
         List<TIMAvManager.LiveUrl> liveUrls = streamRes.getUrls();
         isPushed = true;
-        pushBtn.setBackgroundResource(R.drawable.icon_stop_push);
+        pushBtn.setText(R.string.live_btn_stop_push);
         int length = liveUrls.size();
         String url = null;
         String url2 = null;
@@ -1680,21 +1683,20 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
     @Override
     public void stopStreamSucc() {
         isPushed = false;
-        pushBtn.setBackgroundResource(R.drawable.icon_push_stream);
+        pushBtn.setText(R.string.live_btn_push);
     }
 
     @Override
     public void startRecordCallback(boolean isSucc) {
         mRecord = true;
-        recordBtn.setBackgroundResource(R.drawable.icon_stoprecord);
-
+        recordBtn.setText(R.string.live_btn_stop_record);
     }
 
     @Override
     public void stopRecordCallback(boolean isSucc, List<String> files) {
         if (isSucc == true) {
             mRecord = false;
-            recordBtn.setBackgroundResource(R.drawable.icon_record);
+            recordBtn.setText(R.string.live_btn_record);
         }
     }
 
