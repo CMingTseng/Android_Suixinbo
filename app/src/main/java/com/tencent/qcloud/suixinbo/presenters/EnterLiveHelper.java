@@ -139,8 +139,8 @@ public class EnterLiveHelper extends Presenter {
 
                     }
 
-                    SxbLog.d(TAG, LogConstants.ACTION_VIEWER_UNSHOW + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + "close camera callback"
-                            + LogConstants.DIV + LogConstants.STATUS.SUCCEED + LogConstants.DIV + "close ids " + ids);
+//                    SxbLog.d(TAG, LogConstants.ACTION_VIEWER_UNSHOW + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + "close camera callback"
+//                            + LogConstants.DIV + LogConstants.STATUS.SUCCEED + LogConstants.DIV + "close ids " + ids);
                     Intent closeintent = new Intent(Constants.ACTION_CAMERA_CLOSE_IN_LIVE);
                     closeintent.putStringArrayListExtra("ids", close_ids);
                     mContext.sendBroadcast(closeintent);
