@@ -69,6 +69,7 @@ public class AVUIControl extends GLViewGroup {
     private SurfaceView mSurfaceView = null;
     private QavsdkControl qavsdk;
     private HashMap<Integer, String> id_view = new HashMap<Integer, String>();
+    private QavsdkControl.onSlideListener mSlideListener;
 
     private SurfaceHolder.Callback mSurfaceHolderListener = new SurfaceHolder.Callback() {
         @Override
@@ -159,9 +160,11 @@ public class AVUIControl extends GLViewGroup {
 
         removeAllView();
         for (int i = 0; i < mGlVideoView.length; i++) {
-            mGlVideoView[i].flush();
-            mGlVideoView[i].clearRender();
-            mGlVideoView[i] = null;
+            if (null != mGlVideoView[i]) {
+                mGlVideoView[i].flush();
+                mGlVideoView[i].clearRender();
+                mGlVideoView[i] = null;
+            }
         }
         mGlRootView.setOnTouchListener(null);
         mGlRootView.setContentPane(null);
@@ -1043,8 +1046,22 @@ public class AVUIControl extends GLViewGroup {
             return true;
         }
 
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+            if(e1.getY()-e2.getY() > 20 && Math.abs(velocityY) > 10){
+                if (null != mSlideListener){
+                    mSlideListener.onSlideUp();
+                }
+            }else if(e2.getY()-e1.getY() > 20 && Math.abs(velocityY) > 10){
+                if (null != mSlideListener){
+                    mSlideListener.onSlideDown();
+                }
+            }
 
-//        @Override
+            return false;
+        }
+
+        //        @Override
 //        public boolean onDoubleTap(MotionEvent e) {
 //            if (mTargetIndex == 0 && mGlVideoView[0].getVideoSrcType() == AVView.VIDEO_SRC_TYPE_SCREEN) {
 //                mClickTimes++;
@@ -1329,6 +1346,18 @@ public class AVUIControl extends GLViewGroup {
     public void setSelfId(String key) {
         if (mGraphicRenderMgr != null) {
             mGraphicRenderMgr.setSelfId(key + "_" + AVView.VIDEO_SRC_TYPE_CAMERA);
+        }
+    }
+
+    public void setSlideLisenter(QavsdkControl.onSlideListener lisenter){
+        mSlideListener = lisenter;
+    }
+
+    public void clearVideoData(){
+        for (int i = 0; i < mGlVideoView.length; i++) {
+            if (null != mGlVideoView[i]) {
+                mGlVideoView[i].setVisibility(INVISIBLE);
+            }
         }
     }
 

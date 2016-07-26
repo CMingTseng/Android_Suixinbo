@@ -382,7 +382,9 @@ public class EnterLiveHelper extends Presenter {
             //通知结束
 //            notifyServerLiveEnd();
 
-            mStepInOutView.quiteRoomComplete(MySelfInfo.getInstance().getIdStatus(), true, null);
+            if (null != mStepInOutView) {
+                mStepInOutView.quiteRoomComplete(MySelfInfo.getInstance().getIdStatus(), true, null);
+            }
         }
     }
 

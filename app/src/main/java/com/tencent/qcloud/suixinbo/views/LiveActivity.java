@@ -52,9 +52,10 @@ import com.tencent.qcloud.suixinbo.model.LiveInfoJson;
 import com.tencent.qcloud.suixinbo.model.MySelfInfo;
 import com.tencent.qcloud.suixinbo.presenters.EnterLiveHelper;
 import com.tencent.qcloud.suixinbo.presenters.LiveHelper;
+import com.tencent.qcloud.suixinbo.presenters.LiveListViewHelper;
 import com.tencent.qcloud.suixinbo.presenters.OKhttpHelper;
-import com.tencent.qcloud.suixinbo.presenters.ProfileInfoHelper;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.EnterQuiteRoomView;
+import com.tencent.qcloud.suixinbo.presenters.viewinface.LiveListView;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.LiveView;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.ProfileView;
 import com.tencent.qcloud.suixinbo.utils.Constants;
@@ -77,12 +78,12 @@ import java.util.TimerTask;
 /**
  * Live直播类
  */
-public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, LiveView, View.OnClickListener, ProfileView {
+public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, LiveView, View.OnClickListener, ProfileView, QavsdkControl.onSlideListener, LiveListView {
     private static final String TAG = LiveActivity.class.getSimpleName();
     private static final int GETPROFILE_JOIN = 0x200;
 
     private EnterLiveHelper mEnterRoomHelper;
-    private ProfileInfoHelper mUserInfoHelper;
+    private LiveListViewHelper mLiveListViewHelper;
     private LiveHelper mLiveHelper;
 
     private ArrayList<ChatEntity> mArrayListChatEntity;
@@ -119,6 +120,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
     private boolean bCleanMode = false;
     private boolean mProfile;
     private boolean bFirstRender = true;
+    private boolean bInAvRoom = false, bSlideUp = false, bDelayQuit = false;
 
     private String backGroundId;
 
@@ -142,8 +144,8 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
         mEnterRoomHelper = new EnterLiveHelper(this, this);
         //房间内的交互协助类
         mLiveHelper = new LiveHelper(this, this);
-        // 用户资料类
-        mUserInfoHelper = new ProfileInfoHelper(this);
+
+        mLiveListViewHelper = new LiveListViewHelper(this);
 
         initView();
         registerReceiver();
@@ -581,8 +583,12 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
      */
     @Override
     public void onBackPressed() {
-        quiteLiveByPurpose();
-
+        if (bInAvRoom) {
+            bDelayQuit = false;
+            quiteLiveByPurpose();
+        }else{
+            finish();
+        }
     }
 
     /**
@@ -655,6 +661,9 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
         Toast.makeText(LiveActivity.this, "EnterRoom  " + id_status + " isSucc " + isSucc, Toast.LENGTH_SHORT).show();
         //必须得进入房间之后才能初始化UI
         mEnterRoomHelper.initAvUILayer(avView);
+        QavsdkControl.getInstance().setSlideListener(this);
+        bInAvRoom = true;
+        bDelayQuit = true;
 
         //设置预览回调，修正摄像头镜像
         mLiveHelper.setCameraPreviewChangeCallback();
@@ -685,9 +694,15 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
                 mDetailDialog.show();
             }
         } else {
-            finish();
+            //finish();
+            if (bDelayQuit) {
+                clearOldData();
+                mHostLeaveLayout.setVisibility(View.VISIBLE);
+            }else{
+                finish();
+            }
         }
-
+        bInAvRoom = false;
     }
 
 
@@ -1798,6 +1813,81 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
                 requestPermissions(permissionsList.toArray(new String[permissionsList.size()]),
                         REQUEST_PHONE_PERMISSIONS);
             }
+        }
+    }
+
+    // 清除老房间数据
+    private void clearOldData(){
+        mArrayListChatEntity.clear();
+        mBoolNeedRefresh = true;
+        if (mBoolRefreshLock) {
+            return;
+        } else {
+            doRefreshListView();
+        }
+        QavsdkControl.getInstance().clearVideoData();
+    }
+
+    @Override
+    public void onSlideUp() {
+        if (MySelfInfo.getInstance().getIdStatus() != Constants.HOST) {
+            SxbLog.v(TAG, "ILVB-DBG|onSlideUp->enter");
+            quiteLiveByPurpose();
+            mLiveListViewHelper.getPageData();
+            bSlideUp = true;
+        }
+    }
+
+    @Override
+    public void onSlideDown() {
+        if (MySelfInfo.getInstance().getIdStatus() != Constants.HOST) {
+            SxbLog.v(TAG, "ILVB-DBG|onSlideDown->enter");
+            quiteLiveByPurpose();
+            mLiveListViewHelper.getPageData();
+            bSlideUp = false;
+        }
+    }
+
+    @Override
+    public void showFirstPage(ArrayList<LiveInfoJson> livelist) {
+        int index = 0, oldPos = 0;
+        for (; index<livelist.size(); index++){
+            if (livelist.get(index).getAvRoomId() == CurLiveInfo.getRoomNum()){
+                oldPos = index;
+                index ++;
+                break;
+            }
+        }
+        if (bSlideUp){
+            index -= 2;
+        }
+        LiveInfoJson info = livelist.get((index+livelist.size())%livelist.size());
+        SxbLog.v(TAG, "ILVB-DBG|showFirstPage->index:"+index+"/"+oldPos+"|room:"+info.getHost().getUid()+"/"+CurLiveInfo.getHostID());
+
+        if (null != info){
+            MySelfInfo.getInstance().setIdStatus(Constants.MEMBER);
+            MySelfInfo.getInstance().setJoinRoomWay(false);
+            CurLiveInfo.setHostID(info.getHost().getUid());
+            CurLiveInfo.setHostName(info.getHost().getUsername());
+            CurLiveInfo.setHostAvator(info.getHost().getAvatar());
+            CurLiveInfo.setRoomNum(info.getAvRoomId());
+            CurLiveInfo.setMembers(info.getWatchCount() + 1); // 添加自己
+            CurLiveInfo.setAdmires(info.getAdmireCount());
+            CurLiveInfo.setAddress(info.getLbs().getAddress());
+
+            backGroundId = CurLiveInfo.getHostID();
+
+            showHeadIcon(mHeadIcon, CurLiveInfo.getHostAvator());
+            if (!TextUtils.isEmpty(CurLiveInfo.getHostName())) {
+                mHostNameTv.setText(UIUtils.getLimitString(CurLiveInfo.getHostName(), 10));
+            }else{
+                mHostNameTv.setText(UIUtils.getLimitString(CurLiveInfo.getHostID(), 10));
+            }
+            tvMembers.setText("" + CurLiveInfo.getMembers());
+            tvAdmires.setText("" + CurLiveInfo.getAdmires());
+
+            //进入房间流程
+            mEnterRoomHelper.startEnterRoom();
         }
     }
 }
