@@ -156,6 +156,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
         //QavsdkControl.getInstance().setCameraPreviewChangeCallback();
         mLiveHelper.setCameraPreviewChangeCallback();
         registerOrientationListener();
+        startOrientationListener();
     }
 
 
@@ -548,7 +549,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
 
     @Override
     protected void onDestroy() {
-
+        stopOrientationListener();
         watchCount = 0;
         super.onDestroy();
         if (null != mHearBeatTimer) {
@@ -1672,7 +1673,6 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
                 mRecordParam.setSreenShot(screenshotCheckBox.isChecked());
                 mRecordParam.setWaterMark(watermarkCheckBox.isChecked());
                 mLiveHelper.startRecord(mRecordParam);
-                startOrientationListener();
                 recordDialog.dismiss();
             }
         });
@@ -1680,11 +1680,9 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
         recordCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startOrientationListener();
                 recordDialog.dismiss();
             }
         });
-        stopOrientationListener();
         Window dialogWindow = recordDialog.getWindow();
         WindowManager.LayoutParams lp = dialogWindow.getAttributes();
         dialogWindow.setGravity(Gravity.CENTER);
