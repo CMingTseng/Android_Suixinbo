@@ -117,14 +117,28 @@ public class SxbLog {
         }
     }
 
-    public static void standardShowLog(String TAG, String info, String success, String info2) {
-        if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST) {
-            SxbLog.d(TAG, LogConstants.ACTION_VIEWER_UNSHOW + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + "close camera callback"
-                    + LogConstants.DIV + LogConstants.STATUS.SUCCEED + LogConstants.DIV + "close ids ");
-        } else {
-            SxbLog.d(TAG, LogConstants.ACTION_VIEWER_ENTER_ROOM + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + info +
-                    LogConstants.DIV + success + LogConstants.DIV + info2);
-        }
+    /**
+     * 上麦LOG
+     * @param TAG
+     * @param info
+     * @param success
+     * @param info2
+     */
+    public static void standardMemberShowLog(String TAG, String info, String success, String info2) {
+            SxbLog.d(TAG, LogConstants.ACTION_VIEWER_UNSHOW + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + info
+                    + LogConstants.DIV +success + LogConstants.DIV + info2);
+    }
+
+    /**
+     * 下麦LOG
+     * @param TAG
+     * @param info
+     * @param success 成功与否
+     * @param info2
+     */
+    public static void standardMemberUnShowLog(String TAG, String info, String success, String info2) {
+        SxbLog.d(TAG, LogConstants.ACTION_VIEWER_UNSHOW + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + info
+                + LogConstants.DIV + success + LogConstants.DIV + info2);
     }
 
 
