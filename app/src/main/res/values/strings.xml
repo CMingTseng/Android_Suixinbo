@@ -49,6 +49,12 @@
 
     <string name="live_host_leave">主播可能暂时离开</string>
 
+    <string name="live_btn_par">par</string>
+    <string name="live_btn_record">录制</string>
+    <string name="live_btn_push">开启推流</string>
+    <string name="live_btn_stop_push">关闭推流</string>
+    <string name="live_btn_stop_record">停录</string>
+
     <!-- pushstream -->
     <string name="clip_title">点击地址复制到黏贴版</string>
     <string name="clip_tip">地址复制到黏贴版上了</string>

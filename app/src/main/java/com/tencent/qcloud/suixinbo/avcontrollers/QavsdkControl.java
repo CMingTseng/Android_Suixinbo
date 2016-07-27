@@ -24,6 +24,11 @@ public class QavsdkControl {
     private static QavsdkControl instance = null;
     private static Context mContext;
 
+    public interface onSlideListener {
+        void onSlideUp();
+        void onSlideDown();
+    }
+
     public static QavsdkControl getInstance() {
         if (instance == null) {
             instance = new QavsdkControl(mContext);
@@ -232,6 +237,18 @@ public class QavsdkControl {
 //        mAVVideoControl.initAVVideoSettings();
 //        mAVAudioControl.initAVAudioSettings();
 //		mAVEndpointControl.initMembersUI((MultiVideoMembersControlUI) contentView.findViewById(R.id.qav_gaudio_gridlayout));
+    }
+
+    public void setSlideListener(onSlideListener listener){
+        if (null != mAVUIControl){
+            mAVUIControl.setSlideLisenter(listener);
+        }
+    }
+
+    public void clearVideoData(){
+        if (null != mAVUIControl){
+            mAVUIControl.clearVideoData();
+        }
     }
 
     public void onResume() {

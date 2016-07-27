@@ -111,7 +111,7 @@ public class EnterLiveHelper extends Presenter {
 
         //房间成员变化回调
         public void onEndpointsUpdateInfo(int eventid, String[] updateList) {
-            SxbLog.d(TAG, "WL_DEBUG onEndpointsUpdateInfo. eventid = " + eventid);
+            SxbLog.d(TAG, "onEndpointsUpdateInfo. eventid = " + eventid);
 
             switch (eventid) {
                 case TYPE_MEMBER_CHANGE_IN:
@@ -138,9 +138,8 @@ public class EnterLiveHelper extends Presenter {
                         ids = ids + " " + id;
 
                     }
+                    SxbLog.standardMemberShowLog(TAG,"close camera callback",""+LogConstants.STATUS.SUCCEED ,"close ids " + ids);
 
-                    SxbLog.d(TAG, LogConstants.ACTION_VIEWER_UNSHOW + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + "close camera callback"
-                            + LogConstants.DIV + LogConstants.STATUS.SUCCEED + LogConstants.DIV + "close ids " + ids);
                     Intent closeintent = new Intent(Constants.ACTION_CAMERA_CLOSE_IN_LIVE);
                     closeintent.putStringArrayListExtra("ids", close_ids);
                     mContext.sendBroadcast(closeintent);
@@ -382,7 +381,9 @@ public class EnterLiveHelper extends Presenter {
             //通知结束
 //            notifyServerLiveEnd();
 
-            mStepInOutView.quiteRoomComplete(MySelfInfo.getInstance().getIdStatus(), true, null);
+            if (null != mStepInOutView) {
+                mStepInOutView.quiteRoomComplete(MySelfInfo.getInstance().getIdStatus(), true, null);
+            }
         }
     }
 
