@@ -13,7 +13,6 @@ import com.tencent.TIMGroupManager;
 import com.tencent.TIMManager;
 import com.tencent.TIMValueCallBack;
 import com.tencent.av.sdk.AVContext;
-import com.tencent.av.sdk.AVRoom;
 import com.tencent.av.sdk.AVRoomMulti;
 import com.tencent.qcloud.suixinbo.R;
 import com.tencent.qcloud.suixinbo.avcontrollers.QavsdkControl;
@@ -76,13 +75,13 @@ public class EnterLiveHelper extends Presenter {
     /**
      * 房间回调
      */
-    private AVRoomMulti.Delegate mRoomDelegate = new AVRoomMulti.Delegate() {
+    private AVRoomMulti.EventListener mEventListener = new AVRoomMulti.EventListener() {
         // 创建房间成功回调
         public void onEnterRoomComplete(int result) {
             if (result == 0) {
                 SxbLog.standardEnterRoomLog(TAG, "enterAVRoom", "" + LogConstants.STATUS.SUCCEED, "room id" + MySelfInfo.getInstance().getMyRoomNum());
-
                 //只有进入房间后才能初始化AvView
+                QavsdkControl.getInstance().setAvRoomMulti(QavsdkControl.getInstance().getAVContext().getRoom());
                 isInAVRoom = true;
                 initAudioService();
                 mStepInOutView.enterRoomComplete(MySelfInfo.getInstance().getIdStatus(), true);
@@ -93,11 +92,8 @@ public class EnterLiveHelper extends Presenter {
 
         }
 
-        // 离开房间成功回调
-        public void onExitRoomComplete(int result) {
-            if (result == 0)
-                SxbLog.standardQuiteRoomLog(TAG, "exitRoom", "" + LogConstants.STATUS.SUCCEED, "result " + result);
-
+        @Override
+        public void onExitRoomComplete() {
             isInAVRoom = false;
             quiteIMChatRoom();
             CurLiveInfo.setCurrentRequestCount(0);
@@ -106,6 +102,10 @@ public class EnterLiveHelper extends Presenter {
             notifyServerLiveEnd();
             if (mStepInOutView != null)
                 mStepInOutView.quiteRoomComplete(MySelfInfo.getInstance().getIdStatus(), true, null);
+        }
+
+        @Override
+        public void onRoomDisconnect(int i) {
 
         }
 
@@ -138,7 +138,7 @@ public class EnterLiveHelper extends Presenter {
                         ids = ids + " " + id;
 
                     }
-                    SxbLog.standardMemberShowLog(TAG,"close camera callback",""+LogConstants.STATUS.SUCCEED ,"close ids " + ids);
+                    SxbLog.standardMemberShowLog(TAG, "close camera callback", "" + LogConstants.STATUS.SUCCEED, "close ids " + ids);
 
                     Intent closeintent = new Intent(Constants.ACTION_CAMERA_CLOSE_IN_LIVE);
                     closeintent.putStringArrayListExtra("ids", close_ids);
@@ -157,15 +157,27 @@ public class EnterLiveHelper extends Presenter {
 
         }
 
-        public void OnPrivilegeDiffNotify(int privilege) {
-            SxbLog.d(TAG, "OnPrivilegeDiffNotify. privilege = " + privilege);
+        @Override
+        public void onPrivilegeDiffNotify(int i) {
+
         }
 
         @Override
-        public void OnSemiAutoRecvCameraVideo(String[] strings) {
-
+        public void onSemiAutoRecvCameraVideo(String[] strings) {
             mStepInOutView.alreadyInLive(strings);
         }
+
+        @Override
+        public void onCameraSettingNotify(int i, int i1, int i2) {
+
+        }
+
+        @Override
+        public void onRoomEvent(int i, int i1, Object o) {
+
+        }
+
+
     };
 
 
@@ -438,31 +450,38 @@ public class EnterLiveHelper extends Presenter {
         AVContext avContext = QavsdkControl.getInstance().getAVContext();
         byte[] authBuffer = null;//权限位加密串；TODO：请业务侧填上自己的加密串
 
-
-        AVRoomMulti.EnterRoomParam enterRoomParam = new AVRoomMulti.EnterRoomParam();
-
+        AVRoomMulti.EnterParam.Builder enterRoomParam = new AVRoomMulti.EnterParam.Builder(roomNum);
         if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST) {
-            enterRoomParam.authBits = Constants.HOST_AUTH;//；TODO：主播权限 所有权限
-            enterRoomParam.avControlRole = Constants.HOST_ROLE;//；TODO：主播角色
-            enterRoomParam.autoCreateRoom = true;//;TODO：主播自动创建房间
+            enterRoomParam.auth(Constants.HOST_AUTH, authBuffer).avControlRole(Constants.HOST_ROLE).autoCreateRoom(true);//；TODO：主播权限 所有权限
         } else {
-            enterRoomParam.authBits = Constants.NORMAL_MEMBER_AUTH;//；TODO：普通成员权限
-            enterRoomParam.avControlRole = Constants.NORMAL_MEMBER_ROLE;//；TODO：普通成员角色
-            enterRoomParam.autoCreateRoom = false;//;TODO：
+            enterRoomParam.auth(Constants.NORMAL_MEMBER_AUTH, authBuffer).avControlRole(Constants.NORMAL_MEMBER_ROLE).autoCreateRoom(false);
         }
-
-        enterRoomParam.appRoomId = roomNum; //；TODO：房间号
-        enterRoomParam.authBuffer = authBuffer;//；TODO：密钥
-        enterRoomParam.audioCategory = Constants.AUDIO_VOICE_CHAT_MODE;//；TODO：音频场景策略
-        enterRoomParam.videoRecvMode = AVRoom.VIDEO_RECV_MODE_SEMI_AUTO_RECV_CAMERA_VIDEO;//；TODO：半自动模式，加速成员进房间获取视频速度
+        enterRoomParam.audioCategory(Constants.AUDIO_VOICE_CHAT_MODE).videoRecvMode(AVRoomMulti.VIDEO_RECV_MODE_SEMI_AUTO_RECV_CAMERA_VIDEO);
 
         if (avContext != null) {
             // create room
-            int ret = avContext.enterRoom(AVRoom.AV_ROOM_MULTI, mRoomDelegate, enterRoomParam);
+            int ret = avContext.enterRoom(mEventListener, enterRoomParam.build());
             SxbLog.i(TAG, "EnterAVRoom " + ret);
         }
 
     }
+
+//
+//    private void EnterAVRoom(int roomNum){
+//
+//        SxbLog.i(TAG, "createlive joinLiveRoom enterAVRoom " + roomNum);
+//        AVContext avContext = QavsdkControl.getInstance().getAVContext();
+//        byte[] authBuffer = null;//权限位加密串；TODO：请业务侧填上自己的加密串
+//
+//
+//
+//        if (avContext != null) {
+//            // create room
+//            int ret = avContext.enterRoom(AVRoom.AV_ROOM_MULTI, mEventListener, enterRoomParam);
+//            avContext.enterRoom()
+//            SxbLog.i(TAG, "EnterAVRoom " + ret);
+//        }
+//    }
 
 
     private void initAudioService() {

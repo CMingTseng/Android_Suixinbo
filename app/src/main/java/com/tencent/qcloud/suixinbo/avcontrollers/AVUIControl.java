@@ -75,7 +75,7 @@ public class AVUIControl extends GLViewGroup {
         @Override
         public void surfaceCreated(SurfaceHolder holder) {
             mCameraSurfaceCreated = true;
-            if (qavsdk.getRoom() != null) {
+            if (qavsdk.getAvRoomMulti() != null) {
                 qavsdk.getAVContext().setRenderMgrAndHolder(mGraphicRenderMgr, holder);
             }
             mContext.sendBroadcast(new Intent(Constants.ACTION_SURFACE_CREATED));
@@ -100,7 +100,7 @@ public class AVUIControl extends GLViewGroup {
     public AVUIControl(Context context, View rootView) {
         mContext = context;
         mRootView = rootView;
-        mGraphicRenderMgr = new GraphicRendererMgr();
+        mGraphicRenderMgr = GraphicRendererMgr.getInstance();
         qavsdk = QavsdkControl.getInstance();
         initQQGlView();
         initCameraPreview();
@@ -180,9 +180,10 @@ public class AVUIControl extends GLViewGroup {
         mGlVideoView = null;
     }
 
-    public void enableDefaultRender() {
-        qavsdk.getAVContext().setRenderFunctionPtr(mGraphicRenderMgr.getRecvDecoderFrameFunctionptr());
-    }
+//    public void enableDefaultRender() {
+//        qavsdk.getAVContext().setRenderFunctionPtr(mGraphicRenderMgr.getRecvDecoderFrameFunctionptr());
+//        qavsdk.getAVContext().setRenderMgrAndHolder(mGraphicRenderMgr.getRecvDecoderFrameFunctionptr(),h);
+//    }
 
     public void setMirror(boolean isMirror, String identifier) {
         GLVideoView view = null;
@@ -341,36 +342,36 @@ public class AVUIControl extends GLViewGroup {
         }
     }
 
-    public String getQualityTips() {
-        String tipsAudio = "";
-        String tipsVideo = "";
-        String tipsRoom = "";
-
-        if (qavsdk != null) {
-            tipsAudio = qavsdk.getAudioQualityTips();
-            tipsVideo = qavsdk.getVideoQualityTips();
-
-            if (qavsdk.getRoom() != null) {
-                tipsRoom = qavsdk.getRoom().getQualityTips();
-            }
-        }
-
-        String tipsAll = "";
-
-        if (tipsRoom != null && tipsRoom.length() > 0) {
-            tipsAll += tipsRoom + "\n";
-        }
-
-        if (tipsAudio != null && tipsAudio.length() > 0) {
-            tipsAll += tipsAudio + "\n";
-        }
-
-        if (tipsVideo != null && tipsVideo.length() > 0) {
-            tipsAll += tipsVideo;
-        }
-
-        return tipsAll;
-    }
+//    public String getQualityTips() {
+//        String tipsAudio = "";
+//        String tipsVideo = "";
+//        String tipsRoom = "";
+//
+//        if (qavsdk != null) {
+//            tipsAudio = qavsdk.getAudioQualityTips();
+//            tipsVideo = qavsdk.getVideoQualityTips();
+//
+//            if (qavsdk.getRoom() != null) {
+//                tipsRoom = qavsdk.getRoom().getQualityTips();
+//            }
+//        }
+//
+//        String tipsAll = "";
+//
+//        if (tipsRoom != null && tipsRoom.length() > 0) {
+//            tipsAll += tipsRoom + "\n";
+//        }
+//
+//        if (tipsAudio != null && tipsAudio.length() > 0) {
+//            tipsAll += tipsAudio + "\n";
+//        }
+//
+//        if (tipsVideo != null && tipsVideo.length() > 0) {
+//            tipsAll += tipsVideo;
+//        }
+//
+//        return tipsAll;
+//    }
 
 
     public void setOffset(int topOffset, int bottomOffset) {

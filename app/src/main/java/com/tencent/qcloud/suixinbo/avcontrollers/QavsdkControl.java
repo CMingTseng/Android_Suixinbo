@@ -5,7 +5,7 @@ import android.view.View;
 
 import com.tencent.av.sdk.AVAudioCtrl;
 import com.tencent.av.sdk.AVContext;
-import com.tencent.av.sdk.AVRoom;
+import com.tencent.av.sdk.AVRoomMulti;
 import com.tencent.av.sdk.AVVideoCtrl;
 import com.tencent.av.sdk.AVView;
 import com.tencent.qcloud.suixinbo.utils.Constants;
@@ -23,9 +23,11 @@ public class QavsdkControl {
     /* 持有私有静态实例，防止被引用，此处赋值为null，目的是实现延迟加载 */
     private static QavsdkControl instance = null;
     private static Context mContext;
+    private static AVRoomMulti avRoomMulti;
 
     public interface onSlideListener {
         void onSlideUp();
+
         void onSlideDown();
     }
 
@@ -160,11 +162,11 @@ public class QavsdkControl {
 //        return mAVRoomControl.getScreenMemberList();
 //    }
 
-    public AVRoom getRoom() {
-        AVContext avContext = getAVContext();
-
-        return avContext != null ? avContext.getRoom() : null;
-    }
+//    public AVRoom getRoom() {
+//        AVContext avContext = getAVContext();
+//
+//        return avContext != null ? avContext.getRoom() : null;
+//    }
 
     public boolean getIsInStartContext() {
         if (mAVContextControl == null)
@@ -218,6 +220,14 @@ public class QavsdkControl {
         return mAVContextControl.getAVContext();
     }
 
+    public void setAvRoomMulti(AVRoomMulti room) {
+        avRoomMulti = room;
+    }
+
+    public AVRoomMulti getAvRoomMulti() {
+        return avRoomMulti;
+    }
+
 
     public void setRemoteHasVideo(String identifier, int videoSrcType, boolean isRemoteHasVideo) {
         if (null != mAVUIControl) {
@@ -239,14 +249,14 @@ public class QavsdkControl {
 //		mAVEndpointControl.initMembersUI((MultiVideoMembersControlUI) contentView.findViewById(R.id.qav_gaudio_gridlayout));
     }
 
-    public void setSlideListener(onSlideListener listener){
-        if (null != mAVUIControl){
+    public void setSlideListener(onSlideListener listener) {
+        if (null != mAVUIControl) {
             mAVUIControl.setSlideLisenter(listener);
         }
     }
 
-    public void clearVideoData(){
-        if (null != mAVUIControl){
+    public void clearVideoData() {
+        if (null != mAVUIControl) {
             mAVUIControl.clearVideoData();
         }
     }
@@ -475,9 +485,7 @@ public class QavsdkControl {
 
             videoQos = getVideoQualityTips();
 
-            if (qavsdk.getRoom() != null) {
-                roomQos = qavsdk.getRoom().getQualityTips();
-            }
+            roomQos = qavsdk.getQualityTips();
         }
 
         if (audioQos != null && videoQos != null && roomQos != null) {

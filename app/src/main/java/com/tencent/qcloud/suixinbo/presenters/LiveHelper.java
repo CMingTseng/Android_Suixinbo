@@ -224,8 +224,7 @@ public class LiveHelper extends Presenter {
                 mRequestIdentifierList[viewindex] = id;
                 viewindex++;
             }
-            int ret = AVEndpoint.requestViewList(mRequestIdentifierList, mRequestViewList, viewindex, mRequestViewListCompleteCallback);
-
+            int ret = QavsdkControl.getInstance().getAvRoomMulti().requestViewList(mRequestIdentifierList, mRequestViewList, viewindex, mRequestViewListCompleteCallback);
 
         } else {
             Toast.makeText(mContext, "Wrong Room!!!! Live maybe close already!", Toast.LENGTH_SHORT).show();
@@ -235,8 +234,8 @@ public class LiveHelper extends Presenter {
     }
 
 
-    private AVEndpoint.RequestViewListCompleteCallback mRequestViewListCompleteCallback = new AVEndpoint.RequestViewListCompleteCallback() {
-        protected void OnComplete(String identifierList[], AVView viewList[], int count, int result) {
+    private AVRoomMulti.RequestViewListCompleteCallback mRequestViewListCompleteCallback = new AVRoomMulti.RequestViewListCompleteCallback() {
+        public void OnComplete(String identifierList[], AVView viewList[], int count, int result) {
             String ids = "";
 
             for (String id : identifierList) {
@@ -882,7 +881,7 @@ public class LiveHelper extends Presenter {
      * @param role 角色名
      */
     public void changeRole(final String role, final boolean leverupper) {
-        ((AVRoomMulti) (QavsdkControl.getInstance().getRoom())).changeAVControlRole(role, new AVRoomMulti.ChangeAVControlRoleCompleteCallback() {
+        ((AVRoomMulti) (QavsdkControl.getInstance().getAvRoomMulti())).changeAVControlRole(role, new AVRoomMulti.ChangeAVControlRoleCompleteCallback() {
                     @Override
                     public void OnComplete(int arg0) {
                         if (arg0 == AVError.AV_OK) {
