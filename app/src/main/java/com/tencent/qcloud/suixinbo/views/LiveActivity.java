@@ -515,6 +515,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
     @Override
     protected void onResume() {
         super.onResume();
+        QavsdkControl.getInstance().getAVContext().getAudioCtrl().enableSpeaker(true);
         mLiveHelper.resume();
         QavsdkControl.getInstance().onResume();
     }
@@ -522,6 +523,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
     @Override
     protected void onPause() {
         super.onPause();
+        QavsdkControl.getInstance().getAVContext().getAudioCtrl().enableSpeaker(false);
         mLiveHelper.pause();
         QavsdkControl.getInstance().onPause();
     }
