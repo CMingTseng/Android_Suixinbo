@@ -340,19 +340,20 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
             view.setImageBitmap(cirBitMap);
         } else {
             SxbLog.d(TAG, "load icon: " + avatar);
+            if (isDestroyed() == true) return;
             RequestManager req = Glide.with(this);
             req.load(avatar).transform(new GlideCircleTransform(this)).into(view);
         }
     }
 
-    private void updateHostLeaveLayout(){
-        if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST){
+    private void updateHostLeaveLayout() {
+        if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST) {
             return;
-        }else{
+        } else {
             // 退出房间或主屏为主播且无主播画面显示主播已离开
-            if (!bInAvRoom || (CurLiveInfo.getHostID().equals(backGroundId) && !mRenderUserList.contains(backGroundId))){
+            if (!bInAvRoom || (CurLiveInfo.getHostID().equals(backGroundId) && !mRenderUserList.contains(backGroundId))) {
                 mHostLeaveLayout.setVisibility(View.VISIBLE);
-            }else{
+            } else {
                 mHostLeaveLayout.setVisibility(View.GONE);
             }
         }
@@ -707,7 +708,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
             if (bDelayQuit) {
                 clearOldData();
                 updateHostLeaveLayout();
-            }else{
+            } else {
                 finish();
             }
         }

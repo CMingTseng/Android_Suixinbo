@@ -312,7 +312,8 @@ public class EnterLiveHelper extends Presenter {
                     isInChatRoom = true;
                 } else {
                     SxbLog.standardEnterRoomLog(TAG, "join im chat room", "" + LogConstants.STATUS.FAILED, "code:" + i + " msg:" + s);
-                    Toast.makeText(mContext, "join IM room fail " + s + " " + i, Toast.LENGTH_SHORT).show();
+                    if (mContext != null)
+                        Toast.makeText(mContext, "join IM room fail " + s + " " + i, Toast.LENGTH_SHORT).show();
                     quiteLive();
                 }
             }
