@@ -237,12 +237,10 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
                 ArrayList<String> ids = intent.getStringArrayListExtra("ids");
                 //如果是自己本地直接渲染
                 for (String id : ids) {
-                    if (id.equals(backGroundId)){
-                        mHostLeaveLayout.setVisibility(View.GONE);
-                    }
                     if (!mRenderUserList.contains(id)) {
                         mRenderUserList.add(id);
                     }
+                    updateHostLeaveLayout();
 
                     if (id.equals(MySelfInfo.getInstance().getId())) {
                         showVideoView(true, id);
@@ -265,22 +263,15 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
                 //如果是自己本地直接渲染
                 for (String id : ids) {
                     mRenderUserList.remove(id);
-                    if (id.equals(backGroundId)) {
-                        mHostLeaveLayout.setVisibility(View.VISIBLE);
-                        return;
-                    }
                 }
+                updateHostLeaveLayout();
             }
 
             if (action.equals(Constants.ACTION_SWITCH_VIDEO)) {//点击成员回调
                 backGroundId = intent.getStringExtra(Constants.EXTRA_IDENTIFIER);
                 SxbLog.v(TAG, "switch video enter with id:"+backGroundId);
 
-                if (mRenderUserList.contains(backGroundId)){
-                    mHostLeaveLayout.setVisibility(View.GONE);
-                }else{
-                    mHostLeaveLayout.setVisibility(View.VISIBLE);
-                }
+                updateHostLeaveLayout();
 
                 if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST) {//自己是主播
                     if (backGroundId.equals(MySelfInfo.getInstance().getId())) {//背景是自己
@@ -351,6 +342,19 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
             SxbLog.d(TAG, "load icon: " + avatar);
             RequestManager req = Glide.with(this);
             req.load(avatar).transform(new GlideCircleTransform(this)).into(view);
+        }
+    }
+
+    private void updateHostLeaveLayout(){
+        if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST){
+            return;
+        }else{
+            // 退出房间或主屏为主播且无主播画面显示主播已离开
+            if (!bInAvRoom || (CurLiveInfo.getHostID().equals(backGroundId) && !mRenderUserList.contains(backGroundId))){
+                mHostLeaveLayout.setVisibility(View.VISIBLE);
+            }else{
+                mHostLeaveLayout.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -665,6 +669,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
         QavsdkControl.getInstance().setSlideListener(this);
         bInAvRoom = true;
         bDelayQuit = true;
+        updateHostLeaveLayout();
 
         //设置预览回调，修正摄像头镜像
         mLiveHelper.setCameraPreviewChangeCallback();
@@ -685,6 +690,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
 
     @Override
     public void quiteRoomComplete(int id_status, boolean succ, LiveInfoJson liveinfo) {
+        bInAvRoom = false;
         if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST) {
             if ((getBaseContext() != null) && (null != mDetailDialog) && (mDetailDialog.isShowing() == false)) {
                 SxbLog.d(TAG, LogConstants.ACTION_HOST_QUIT_ROOM + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + "quite room callback"
@@ -698,12 +704,11 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
             //finish();
             if (bDelayQuit) {
                 clearOldData();
-                mHostLeaveLayout.setVisibility(View.VISIBLE);
+                updateHostLeaveLayout();
             }else{
                 finish();
             }
         }
-        bInAvRoom = false;
     }
 
 
@@ -1115,7 +1120,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_back:
-                quiteLiveByPurpose();
+                onBackPressed();
                 break;
             case R.id.message_input:
                 inputMsgDialog();
