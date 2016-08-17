@@ -485,7 +485,7 @@ public class QavsdkControl {
 
             videoQos = getVideoQualityTips();
 
-            roomQos = qavsdk.getQualityTips();
+            roomQos = getAvRoomMulti().getQualityTips();
         }
 
         if (audioQos != null && videoQos != null && roomQos != null) {

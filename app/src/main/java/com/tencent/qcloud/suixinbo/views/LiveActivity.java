@@ -269,7 +269,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
 
             if (action.equals(Constants.ACTION_SWITCH_VIDEO)) {//点击成员回调
                 backGroundId = intent.getStringExtra(Constants.EXTRA_IDENTIFIER);
-                SxbLog.v(TAG, "switch video enter with id:"+backGroundId);
+                SxbLog.v(TAG, "switch video enter with id:" + backGroundId);
 
                 updateHostLeaveLayout();
 
@@ -365,7 +365,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
         mHostCtrView = (LinearLayout) findViewById(R.id.host_bottom_layout);
         mNomalMemberCtrView = (LinearLayout) findViewById(R.id.member_bottom_layout);
         mVideoMemberCtrlView = (LinearLayout) findViewById(R.id.video_member_bottom_layout);
-        mHostLeaveLayout = (LinearLayout)findViewById(R.id.ll_host_leave);
+        mHostLeaveLayout = (LinearLayout) findViewById(R.id.ll_host_leave);
         mVideoChat = (TextView) findViewById(R.id.video_interact);
         mHeartLayout = (HeartLayout) findViewById(R.id.heart_layout);
         mVideoTime = (TextView) findViewById(R.id.broadcasting_time);
@@ -375,7 +375,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
         tvMembers = (TextView) findViewById(R.id.member_counts);
         tvAdmires = (TextView) findViewById(R.id.heart_counts);
 
-        speedBtn = (TextView)findViewById(R.id.speed_test_btn);
+        speedBtn = (TextView) findViewById(R.id.speed_test_btn);
         speedBtn.setOnClickListener(this);
 
         BtnCtrlVideo = (TextView) findViewById(R.id.camera_controll);
@@ -591,7 +591,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
         if (bInAvRoom) {
             bDelayQuit = false;
             quiteLiveByPurpose();
-        }else{
+        } else {
             finish();
         }
     }
@@ -918,7 +918,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
     @Override
     public boolean showInviteView(String id) {
         SxbLog.d(TAG, LogConstants.ACTION_VIEWER_SHOW + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + "invite up show" +
-            LogConstants.DIV + "id " + id);
+                LogConstants.DIV + "id " + id);
         int index = QavsdkControl.getInstance().getAvailableViewIndex(1);
         if (index == -1) {
             Toast.makeText(LiveActivity.this, "the invitation's upper limit is 3", Toast.LENGTH_SHORT).show();
@@ -1031,7 +1031,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
         } else {
             //TODO 主动下麦 下麦；
             SxbLog.d(TAG, LogConstants.ACTION_VIEWER_UNSHOW + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + "start unShow" +
-                LogConstants.DIV + "id " + id);
+                    LogConstants.DIV + "id " + id);
             mLiveHelper.changeAuthandRole(false, Constants.NORMAL_MEMBER_AUTH, Constants.NORMAL_MEMBER_ROLE);
 //            mLiveHelper.closeCameraAndMic();//是自己成员关闭
         }
@@ -1120,6 +1120,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_back:
+//                quiteLiveByPurpose();
                 onBackPressed();
                 break;
             case R.id.message_input:
@@ -1365,8 +1366,8 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
             public void onClick(View view) {
 //                mVideoMemberCtrlView.setVisibility(View.VISIBLE);
 //                mNomalMemberCtrView.setVisibility(View.INVISIBLE);
-                SxbLog.d(TAG, LogConstants.ACTION_VIEWER_SHOW + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + "accept invite"+
-                    LogConstants.DIV + "host id " + CurLiveInfo.getHostID());
+                SxbLog.d(TAG, LogConstants.ACTION_VIEWER_SHOW + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + "accept invite" +
+                        LogConstants.DIV + "host id " + CurLiveInfo.getHostID());
                 //上麦 ；TODO 上麦 上麦 上麦 ！！！！！；
                 mLiveHelper.changeAuthandRole(true, Constants.VIDEO_MEMBER_AUTH, Constants.VIDEO_MEMBER_ROLE);
                 inviteDg.dismiss();
@@ -1800,7 +1801,6 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
     }
 
 
-
     void checkPermission() {
         final List<String> permissionsList = new ArrayList<>();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -1820,7 +1820,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
     }
 
     // 清除老房间数据
-    private void clearOldData(){
+    private void clearOldData() {
         mArrayListChatEntity.clear();
         mBoolNeedRefresh = true;
         if (mBoolRefreshLock) {
@@ -1854,20 +1854,20 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
     @Override
     public void showFirstPage(ArrayList<LiveInfoJson> livelist) {
         int index = 0, oldPos = 0;
-        for (; index<livelist.size(); index++){
-            if (livelist.get(index).getAvRoomId() == CurLiveInfo.getRoomNum()){
+        for (; index < livelist.size(); index++) {
+            if (livelist.get(index).getAvRoomId() == CurLiveInfo.getRoomNum()) {
                 oldPos = index;
-                index ++;
+                index++;
                 break;
             }
         }
-        if (bSlideUp){
+        if (bSlideUp) {
             index -= 2;
         }
-        LiveInfoJson info = livelist.get((index+livelist.size())%livelist.size());
-        SxbLog.v(TAG, "ILVB-DBG|showFirstPage->index:"+index+"/"+oldPos+"|room:"+info.getHost().getUid()+"/"+CurLiveInfo.getHostID());
+        LiveInfoJson info = livelist.get((index + livelist.size()) % livelist.size());
+        SxbLog.v(TAG, "ILVB-DBG|showFirstPage->index:" + index + "/" + oldPos + "|room:" + info.getHost().getUid() + "/" + CurLiveInfo.getHostID());
 
-        if (null != info){
+        if (null != info) {
             MySelfInfo.getInstance().setIdStatus(Constants.MEMBER);
             MySelfInfo.getInstance().setJoinRoomWay(false);
             CurLiveInfo.setHostID(info.getHost().getUid());
@@ -1883,7 +1883,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
             showHeadIcon(mHeadIcon, CurLiveInfo.getHostAvator());
             if (!TextUtils.isEmpty(CurLiveInfo.getHostName())) {
                 mHostNameTv.setText(UIUtils.getLimitString(CurLiveInfo.getHostName(), 10));
-            }else{
+            } else {
                 mHostNameTv.setText(UIUtils.getLimitString(CurLiveInfo.getHostID(), 10));
             }
             tvMembers.setText("" + CurLiveInfo.getMembers());
