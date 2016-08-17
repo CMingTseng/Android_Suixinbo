@@ -524,9 +524,13 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
     @Override
     protected void onPause() {
         super.onPause();
-        QavsdkControl.getInstance().getAVContext().getAudioCtrl().enableSpeaker(false);
-        mLiveHelper.pause();
-        QavsdkControl.getInstance().onPause();
+        if (QavsdkControl.getInstance() != null)
+            if (QavsdkControl.getInstance().getAVContext() != null)
+                QavsdkControl.getInstance().getAVContext().getAudioCtrl().enableSpeaker(false);
+        if (mLiveHelper != null)
+            mLiveHelper.pause();
+        if (QavsdkControl.getInstance() != null)
+            QavsdkControl.getInstance().onPause();
     }
 
 
