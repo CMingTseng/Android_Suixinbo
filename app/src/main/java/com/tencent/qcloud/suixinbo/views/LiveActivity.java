@@ -340,7 +340,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
             view.setImageBitmap(cirBitMap);
         } else {
             SxbLog.d(TAG, "load icon: " + avatar);
-            if (isDestroyed() == true) return;
+//            if (isDestroyed() == true) return;
             RequestManager req = Glide.with(this);
             req.load(avatar).transform(new GlideCircleTransform(this)).into(view);
         }
