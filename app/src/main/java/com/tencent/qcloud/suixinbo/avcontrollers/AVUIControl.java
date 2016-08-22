@@ -312,29 +312,63 @@ public class AVUIControl extends GLViewGroup {
             case 0:
                 for (int i = 0; i < getChildCount(); i++) {
                     GLView view = getChild(i);
-                    if (view != null)
-                        view.setRotation(0);
+                    if (view != null){
+                        if (i == 0){
+                            GLVideoView mView = (GLVideoView) view;
+                            mView.setRotation(0, false);
+                        }else{
+                            view.setRotation(0);
+                        }
+
+                    }
                 }
                 break;
             case 90:
                 for (int i = 0; i < getChildCount(); i++) {
                     GLView view = getChild(i);
-                    if (view != null)
-                        view.setRotation(90);
+                    if (view != null){
+                        if (i == 0){
+                            GLVideoView mView = (GLVideoView) view;
+                            mView.setRotation(90, false);
+                        }else{
+                            view.setRotation(90);
+                        }
+
+                    }
+//                    if (view != null)
+//                        view.setRotation(90);
                 }
                 break;
             case 180:
                 for (int i = 0; i < getChildCount(); i++) {
                     GLView view = getChild(i);
-                    if (view != null)
-                        view.setRotation(180);
+                    if (view != null){
+                        if (i == 0){
+                            GLVideoView mView = (GLVideoView) view;
+                            mView.setRotation(180, false);
+                        }else{
+                            view.setRotation(180);
+                        }
+
+                    }
+//                    if (view != null)
+//                        view.setRotation(180);
                 }
                 break;
             case 270:
                 for (int i = 0; i < getChildCount(); i++) {
                     GLView view = getChild(i);
-                    if (view != null)
-                        view.setRotation(270);
+                    if (view != null){
+                        if (i == 0){
+                            GLVideoView mView = (GLVideoView) view;
+                            mView.setRotation(270, false);
+                        }else{
+                            view.setRotation(270);
+                        }
+
+                    }
+//                    if (view != null)
+//                        view.setRotation(270);
                 }
                 break;
             default:
