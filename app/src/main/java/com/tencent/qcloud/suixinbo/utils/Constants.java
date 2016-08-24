@@ -51,6 +51,8 @@ public class Constants {
 
     public static final int IS_ALREADY_MEMBER = 10013;
 
+    public static final int IS_ALREADY_IN_ROOM = 10025;
+
     public static final int TEXT_TYPE = 0;
     public static final int MEMBER_ENTER = 1;
     public static final int MEMBER_EXIT = 2;

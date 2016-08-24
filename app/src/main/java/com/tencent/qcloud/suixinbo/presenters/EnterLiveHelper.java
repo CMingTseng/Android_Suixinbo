@@ -106,7 +106,14 @@ public class EnterLiveHelper extends Presenter {
 
         @Override
         public void onRoomDisconnect(int i) {
-
+            isInAVRoom = false;
+            quiteIMChatRoom();
+            CurLiveInfo.setCurrentRequestCount(0);
+            uninitAudioService();
+            //通知结束
+            notifyServerLiveEnd();
+            if (mStepInOutView != null)
+                mStepInOutView.quiteRoomComplete(MySelfInfo.getInstance().getIdStatus(), true, null);
         }
 
         //房间成员变化回调
@@ -200,7 +207,7 @@ public class EnterLiveHelper extends Presenter {
             public void onError(int i, String s) {
                 SxbLog.i(TAG, "onError " + i + "   " + s);
                 //已在房间中,重复进入房间
-                if (i == 10025) {
+                if (i == Constants.IS_ALREADY_IN_ROOM) {
                     isInChatRoom = true;
                     createAVRoom(MySelfInfo.getInstance().getMyRoomNum());
                     return;
