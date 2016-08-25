@@ -1249,14 +1249,17 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
                 break;
             case R.id.invite_view1:
                 inviteView1.setVisibility(View.INVISIBLE);
+                inviteView1.setTag("");
                 mLiveHelper.sendGroupMessage(Constants.AVIMCMD_MULTI_CANCEL_INTERACT, "" + inviteView1.getTag());
                 break;
             case R.id.invite_view2:
                 inviteView2.setVisibility(View.INVISIBLE);
+                inviteView2.setTag("");
                 mLiveHelper.sendGroupMessage(Constants.AVIMCMD_MULTI_CANCEL_INTERACT, "" + inviteView2.getTag());
                 break;
             case R.id.invite_view3:
                 inviteView3.setVisibility(View.INVISIBLE);
+                inviteView3.setTag("");
                 mLiveHelper.sendGroupMessage(Constants.AVIMCMD_MULTI_CANCEL_INTERACT, "" + inviteView3.getTag());
                 break;
             case R.id.param_video:
