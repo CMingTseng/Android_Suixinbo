@@ -697,6 +697,8 @@ public class LiveHelper extends Presenter {
     }
 
 
+
+
     public void sendC2CMessage(final int cmd, String Param, final String sendId) {
         JSONObject inviteCmd = new JSONObject();
         try {
@@ -901,6 +903,43 @@ public class LiveHelper extends Presenter {
                 }
 
         );
+    }
+
+
+    public void autoFocuse() {
+        AVVideoCtrl videoCtrl = QavsdkControl.getInstance().getAVContext().getVideoCtrl();
+        if (null == videoCtrl) {
+            return;
+        }
+        Camera cam = (Camera) videoCtrl.getCamera();
+        Camera.Parameters parameters = cam.getParameters();
+        parameters = (Camera.Parameters) videoCtrl.getCameraPara();
+        List<String> focusModes = parameters.getSupportedFocusModes();
+        if (focusModes != null && focusModes.contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)) {
+            parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+        } else {
+
+            return;
+        }
+        parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);//1连续对焦
+        cam.setParameters(parameters);
+        cam.cancelAutoFocus();// 2如果要实现连续的自动对焦，这一句必须加上
+//        initCamera();//实现相机的参数初始化
+        if ((cam == null) || (!(cam instanceof Camera))) {
+            return;
+        } else {
+            cam.autoFocus(new Camera.AutoFocusCallback() {
+                @Override
+                public void onAutoFocus(boolean success, Camera camera) {
+                    if (success) {
+//                        initCamera();//实现相机的参数初始化
+                        camera.cancelAutoFocus();//只有加上了这一句，才会自动对焦。
+                    }
+                }
+
+            });
+        }
+
     }
 
 
