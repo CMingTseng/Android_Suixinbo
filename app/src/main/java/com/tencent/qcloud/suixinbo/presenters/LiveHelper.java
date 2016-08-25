@@ -869,6 +869,10 @@ public class LiveHelper extends Presenter {
         QavsdkControl qavsdk = QavsdkControl.getInstance();
         AVContext avContext = qavsdk.getAVContext();
         AVRoomMulti room = (AVRoomMulti) avContext.getRoom();
+        if (null == room){
+            SxbLog.w(TAG, "changeAuthority->no room found");
+            return false;
+        }
         if (auth_buffer != null) {
             return room.changeAuthority(auth_bits, auth_buffer, auth_buffer.length, callback);
         } else {

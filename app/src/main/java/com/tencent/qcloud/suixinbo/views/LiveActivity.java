@@ -121,6 +121,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
     private boolean mProfile;
     private boolean bFirstRender = true;
     private boolean bInAvRoom = false, bSlideUp = false, bDelayQuit = false;
+    private boolean bReadyToChange = false;       // 正在切换房间
 
     private String backGroundId;
 
@@ -437,6 +438,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
 
 
             mMemberDg = new MembersDialog(this, R.style.floag_dialog, this);
+            mMemberDg.setCanceledOnTouchOutside(true);
             startRecordAnimation();
             showHeadIcon(mHeadIcon, MySelfInfo.getInstance().getAvatar());
             mBeautySettings = (LinearLayout) findViewById(R.id.qav_beauty_setting);
@@ -690,12 +692,13 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
                 mLiveHelper.sendGroupMessage(Constants.AVIMCMD_EnterLive, "");
             }
         }
+
+        bReadyToChange = false;
     }
 
 
     @Override
     public void quiteRoomComplete(int id_status, boolean succ, LiveInfoJson liveinfo) {
-        bInAvRoom = false;
         if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST) {
             if ((getBaseContext() != null) && (null != mDetailDialog) && (mDetailDialog.isShowing() == false)) {
                 SxbLog.d(TAG, LogConstants.ACTION_HOST_QUIT_ROOM + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + "quite room callback"
@@ -707,13 +710,21 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
             }
         } else {
             //finish();
+            if (bInAvRoom){
+                if (bReadyToChange){
+                    clearOldData();
+                    mLiveListViewHelper.getPageData();
+                }
+            }else{
+                bReadyToChange = false;
+            }
             if (bDelayQuit) {
-                clearOldData();
                 updateHostLeaveLayout();
             } else {
                 finish();
             }
         }
+        bInAvRoom = false;
     }
 
 
@@ -1838,21 +1849,31 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
 
     @Override
     public void onSlideUp() {
-        if (MySelfInfo.getInstance().getIdStatus() != Constants.HOST) {
+        if (!bReadyToChange && MySelfInfo.getInstance().getIdStatus() != Constants.HOST) {
             SxbLog.v(TAG, "ILVB-DBG|onSlideUp->enter");
-            quiteLiveByPurpose();
-            mLiveListViewHelper.getPageData();
             bSlideUp = true;
+            bReadyToChange = true;
+            if (bInAvRoom){
+                quiteLiveByPurpose();
+            }else{
+                clearOldData();
+                mLiveListViewHelper.getPageData();
+            }
         }
     }
 
     @Override
     public void onSlideDown() {
-        if (MySelfInfo.getInstance().getIdStatus() != Constants.HOST) {
+        if (!bReadyToChange && MySelfInfo.getInstance().getIdStatus() != Constants.HOST) {
             SxbLog.v(TAG, "ILVB-DBG|onSlideDown->enter");
-            quiteLiveByPurpose();
-            mLiveListViewHelper.getPageData();
             bSlideUp = false;
+            bReadyToChange = true;
+            if (bInAvRoom){
+                quiteLiveByPurpose();
+            }else{
+                clearOldData();
+                mLiveListViewHelper.getPageData();
+            }
         }
     }
 
