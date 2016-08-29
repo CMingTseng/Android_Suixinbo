@@ -710,12 +710,12 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
             }
         } else {
             //finish();
-            if (bInAvRoom){
-                if (bReadyToChange){
+            if (bInAvRoom) {
+                if (bReadyToChange) {
                     clearOldData();
                     mLiveListViewHelper.getPageData();
                 }
-            }else{
+            } else {
                 bReadyToChange = false;
             }
             if (bDelayQuit) {
@@ -1652,7 +1652,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
     private String classId = "";
     private boolean mRecord = false;
     private EditText filenameEditText, tagEditText, classEditText;
-    private CheckBox trancodeCheckBox, screenshotCheckBox, watermarkCheckBox;
+    private CheckBox trancodeCheckBox, screenshotCheckBox, watermarkCheckBox, audioCheckBox;
 
     private void initRecordDialog() {
         recordDialog = new Dialog(this, R.style.dialog);
@@ -1665,6 +1665,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
         trancodeCheckBox = (CheckBox) recordDialog.findViewById(R.id.record_tran_code);
         screenshotCheckBox = (CheckBox) recordDialog.findViewById(R.id.record_screen_shot);
         watermarkCheckBox = (CheckBox) recordDialog.findViewById(R.id.record_water_mark);
+        audioCheckBox = (CheckBox) recordDialog.findViewById(R.id.record_audio);
 
         if (filename.length() > 0) {
             filenameEditText.setText(filename);
@@ -1697,6 +1698,12 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
                 mRecordParam.setTransCode(trancodeCheckBox.isChecked());
                 mRecordParam.setSreenShot(screenshotCheckBox.isChecked());
                 mRecordParam.setWaterMark(watermarkCheckBox.isChecked());
+
+                if (audioCheckBox.isChecked()) {
+                    mRecordParam.setRecordType(TIMAvManager.RecordType.AUDIO);
+                } else {
+                    mRecordParam.setRecordType(TIMAvManager.RecordType.VIDEO);
+                }
                 mLiveHelper.startRecord(mRecordParam);
                 recordDialog.dismiss();
             }
@@ -1856,9 +1863,9 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
             SxbLog.v(TAG, "ILVB-DBG|onSlideUp->enter");
             bSlideUp = true;
             bReadyToChange = true;
-            if (bInAvRoom){
+            if (bInAvRoom) {
                 quiteLiveByPurpose();
-            }else{
+            } else {
                 clearOldData();
                 mLiveListViewHelper.getPageData();
             }
@@ -1871,9 +1878,9 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
             SxbLog.v(TAG, "ILVB-DBG|onSlideDown->enter");
             bSlideUp = false;
             bReadyToChange = true;
-            if (bInAvRoom){
+            if (bInAvRoom) {
                 quiteLiveByPurpose();
-            }else{
+            } else {
                 clearOldData();
                 mLiveListViewHelper.getPageData();
             }
