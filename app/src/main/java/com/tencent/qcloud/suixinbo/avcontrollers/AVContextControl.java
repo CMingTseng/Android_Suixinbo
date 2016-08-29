@@ -125,7 +125,7 @@ class AVContextControl {
      */
     private void onAVSDKCreate(boolean result, long tinyId, int errorCode) {
         if (result) {
-            mAVContext = AVContext.createInstance(mContext,true);
+            mAVContext = AVContext.createInstance(mContext,false);
 
             int ret = mAVContext.start(mConfig,mStartContextCompleteCallback);
             SxbLog.i(TAG, "onAVSDKCreate ret "+ret);
