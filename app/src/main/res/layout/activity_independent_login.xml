@@ -79,6 +79,15 @@
         </FrameLayout>
 
     </LinearLayout>
+    <TextView
+        android:id="@+id/tv_login_welcome"
+        android:visibility="gone"
+        android:text="@string/tencent_login"
+        android:gravity="center"
+        android:textSize="18dp"
+        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 
 </RelativeLayout>

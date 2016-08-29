@@ -24,7 +24,7 @@ import java.util.List;
  * 登录类
  */
 public class LoginActivity extends BaseActivity implements View.OnClickListener, LoginView {
-    TextView mBtnLogin, mBtnRegister;
+    TextView mBtnLogin, mBtnRegister, mTvWelcome;
     EditText mPassWord, mUserName;
     private static final String TAG = LoginActivity.class.getSimpleName();
     private LoginHelper mLoginHeloper;
@@ -38,9 +38,9 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
         checkPermission();
         //获取个人数据本地缓存
         MySelfInfo.getInstance().getCache(getApplicationContext());
-        if (needLogin() == true) {//本地没有账户需要登录
-            initView();
-        } else {
+        initView();
+        if (!needLogin()) {//本地没有账户需要登录
+            mTvWelcome.setVisibility(View.VISIBLE);
             //有账户登录直接IM登录
             SxbLog.i(TAG, "LoginActivity onCreate");
             mLoginHeloper.imLogin(MySelfInfo.getInstance().getId(), MySelfInfo.getInstance().getUserSig());
@@ -82,6 +82,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
 
     private void initView() {
         setContentView(R.layout.activity_independent_login);
+        mTvWelcome = (TextView)findViewById(R.id.tv_login_welcome);
         mBtnLogin = (TextView) findViewById(R.id.btn_login);
         mUserName = (EditText) findViewById(R.id.username);
         mPassWord = (EditText) findViewById(R.id.password);
@@ -124,7 +125,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
 
     @Override
     public void loginFail() {
-        initView();
+        mTvWelcome.setVisibility(View.GONE);
     }
 
     void checkPermission() {
