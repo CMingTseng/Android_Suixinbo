@@ -542,16 +542,19 @@ public class LiveHelper extends Presenter {
                     break;
                 case Constants.AVIMCMD_MUlTI_JOIN:
                     Log.i(TAG, "handleCustomMsg " + identifier);
-                    mLiveView.cancelInviteView(identifier);
+                    if (null != mLiveView)
+                        mLiveView.cancelInviteView(identifier);
                     break;
                 case Constants.AVIMCMD_MUlTI_REFUSE:
-                    mLiveView.cancelInviteView(identifier);
+                    if (null != mLiveView)
+                        mLiveView.cancelInviteView(identifier);
                     if (null != mContext) {
                         Toast.makeText(mContext, identifier + " refuse !", Toast.LENGTH_SHORT).show();
                     }
                     break;
                 case Constants.AVIMCMD_Praise:
-                    mLiveView.refreshThumbUp();
+                    if (null != mLiveView)
+                        mLiveView.refreshThumbUp();
                     break;
                 case Constants.AVIMCMD_EnterLive:
                     //mLiveView.refreshText("Step in live", sendId);
@@ -579,7 +582,8 @@ public class LiveHelper extends Presenter {
                     }
                     break;
                 case Constants.AVIMCMD_MULTI_HOST_CANCELINVITE:
-                    mLiveView.hideInviteDialog();
+                    if (null != mLiveView)
+                        mLiveView.hideInviteDialog();
                     break;
                 case Constants.AVIMCMD_MULTI_HOST_CONTROLL_CAMERA:
                     toggleCamera();
