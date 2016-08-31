@@ -227,7 +227,9 @@ public class LiveHelper extends Presenter {
             int ret = QavsdkControl.getInstance().getAvRoomMulti().requestViewList(mRequestIdentifierList, mRequestViewList, viewindex, mRequestViewListCompleteCallback);
 
         } else {
-            Toast.makeText(mContext, "Wrong Room!!!! Live maybe close already!", Toast.LENGTH_SHORT).show();
+            if (null != mContext) {
+                Toast.makeText(mContext, "Wrong Room!!!! Live maybe close already!", Toast.LENGTH_SHORT).show();
+            }
         }
 
 
@@ -255,9 +257,13 @@ public class LiveHelper extends Presenter {
                 @Override
                 public void onError(int i, String s) {
                     if (i == 85) { //消息体太长
-                        Toast.makeText(mContext, "Text too long ", Toast.LENGTH_SHORT).show();
+                        if (null != mContext) {
+                            Toast.makeText(mContext, "Text too long ", Toast.LENGTH_SHORT).show();
+                        }
                     } else if (i == 6011) {//群主不存在
-                        Toast.makeText(mContext, "Host don't exit ", Toast.LENGTH_SHORT).show();
+                        if (null != mContext) {
+                            Toast.makeText(mContext, "Host don't exit ", Toast.LENGTH_SHORT).show();
+                        }
                     }
                     SxbLog.e(TAG, "send message failed. code: " + i + " errmsg: " + s);
                 }
@@ -312,9 +318,13 @@ public class LiveHelper extends Presenter {
             @Override
             public void onError(int i, String s) {
                 if (i == 85) { //消息体太长
-                    Toast.makeText(mContext, "Text too long ", Toast.LENGTH_SHORT).show();
+                    if (null != mContext) {
+                        Toast.makeText(mContext, "Text too long ", Toast.LENGTH_SHORT).show();
+                    }
                 } else if (i == 6011) {//群主不存在
-                    Toast.makeText(mContext, "Host don't exit ", Toast.LENGTH_SHORT).show();
+                    if (null != mContext) {
+                        Toast.makeText(mContext, "Host don't exit ", Toast.LENGTH_SHORT).show();
+                    }
                 }
                 SxbLog.e(TAG, "send message failed. code: " + i + " errmsg: " + s);
             }
@@ -448,8 +458,9 @@ public class LiveHelper extends Presenter {
                 //系统消息
                 if (type == TIMElemType.GroupSystem) {
                     if (TIMGroupSystemElemType.TIM_GROUP_SYSTEM_DELETE_GROUP_TYPE == ((TIMGroupSystemElem) elem).getSubtype()) {
-                        mContext.sendBroadcast(new Intent(
-                                Constants.ACTION_HOST_LEAVE));
+                        if (null != mContext) {
+                            mContext.sendBroadcast(new Intent(Constants.ACTION_HOST_LEAVE));
+                        }
                     }
 
                 }
@@ -535,7 +546,9 @@ public class LiveHelper extends Presenter {
                     break;
                 case Constants.AVIMCMD_MUlTI_REFUSE:
                     mLiveView.cancelInviteView(identifier);
-                    Toast.makeText(mContext, identifier + " refuse !", Toast.LENGTH_SHORT).show();
+                    if (null != mContext) {
+                        Toast.makeText(mContext, identifier + " refuse !", Toast.LENGTH_SHORT).show();
+                    }
                     break;
                 case Constants.AVIMCMD_Praise:
                     mLiveView.refreshThumbUp();
@@ -747,7 +760,9 @@ public class LiveHelper extends Presenter {
                 @Override
                 public void onError(int i, String s) {
                     SxbLog.e(TAG, "url error " + i + " : " + s);
-                    Toast.makeText(mContext, "start stream error,try again " + i + " : " + s, Toast.LENGTH_SHORT).show();
+                    if (null != mContext) {
+                        Toast.makeText(mContext, "start stream error,try again " + i + " : " + s, Toast.LENGTH_SHORT).show();
+                    }
                 }
 
                 @Override
@@ -772,8 +787,9 @@ public class LiveHelper extends Presenter {
             @Override
             public void onError(int i, String s) {
                 SxbLog.e(TAG, "stop  push error " + i + " : " + s);
-                Toast.makeText(mContext, "stop stream error,try again " + i + " : " + s, Toast.LENGTH_SHORT).show();
-
+                if (null != mContext) {
+                    Toast.makeText(mContext, "stop stream error,try again " + i + " : " + s, Toast.LENGTH_SHORT).show();
+                }
             }
 
             @Override
@@ -901,10 +917,14 @@ public class LiveHelper extends Presenter {
                                 SxbLog.standardMemberUnShowLog(TAG, "change role down", "" + LogConstants.STATUS.SUCCEED, "role " + role);
                                 closeCameraAndMic();
                             }
-                            Toast.makeText(mContext, "change to VideoMember succ !", Toast.LENGTH_SHORT);
+                            if (null != mContext) {
+                                Toast.makeText(mContext, "change to VideoMember succ !", Toast.LENGTH_SHORT);
+                            }
                         } else {
                             SxbLog.standardMemberUnShowLog(TAG, "change role ", "" + LogConstants.STATUS.FAILED, "code " + arg0);
-                            Toast.makeText(mContext, "change to VideoMember failed", Toast.LENGTH_SHORT);
+                            if (null != mContext) {
+                                Toast.makeText(mContext, "change to VideoMember failed", Toast.LENGTH_SHORT);
+                            }
                         }
                     }
                 }
