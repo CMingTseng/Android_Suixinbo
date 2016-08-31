@@ -304,7 +304,7 @@ public class AVUIControl extends GLViewGroup {
         mCacheRotation = rotation;
 
         // layoutVideoView(true);
-        if (qavsdk != null) {
+        if (qavsdk != null && null != qavsdk.getAVContext()) {
             AVVideoCtrl avVideoCtrl = qavsdk.getAVContext().getVideoCtrl();
             avVideoCtrl.setRotation(rotation);
         }
