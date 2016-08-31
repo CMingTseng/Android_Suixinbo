@@ -84,7 +84,8 @@ public class EnterLiveHelper extends Presenter {
                 QavsdkControl.getInstance().setAvRoomMulti(QavsdkControl.getInstance().getAVContext().getRoom());
                 isInAVRoom = true;
                 initAudioService();
-                mStepInOutView.enterRoomComplete(MySelfInfo.getInstance().getIdStatus(), true);
+                if (null != mStepInOutView)
+                    mStepInOutView.enterRoomComplete(MySelfInfo.getInstance().getIdStatus(), true);
             } else {
                 quiteAVRoom();
                 SxbLog.standardEnterRoomLog(TAG, "enterAVRoom", "" + LogConstants.STATUS.FAILED, "result " + result);
@@ -123,7 +124,8 @@ public class EnterLiveHelper extends Presenter {
             switch (eventid) {
                 case TYPE_MEMBER_CHANGE_IN:
                     SxbLog.i(TAG, "stepin id  " + updateList.length);
-                    mStepInOutView.memberJoinLive(updateList);
+                    if (null != mStepInOutView)
+                        mStepInOutView.memberJoinLive(updateList);
 
                     break;
                 case TYPE_MEMBER_CHANGE_HAS_CAMERA_VIDEO:
@@ -156,7 +158,8 @@ public class EnterLiveHelper extends Presenter {
                     break;
 
                 case TYPE_MEMBER_CHANGE_OUT:
-                    mStepInOutView.memberQuiteLive(updateList);
+                    if (null != mStepInOutView)
+                        mStepInOutView.memberQuiteLive(updateList);
                     break;
                 default:
                     break;
@@ -171,7 +174,8 @@ public class EnterLiveHelper extends Presenter {
 
         @Override
         public void onSemiAutoRecvCameraVideo(String[] strings) {
-            mStepInOutView.alreadyInLive(strings);
+            if (null != mStepInOutView)
+                mStepInOutView.alreadyInLive(strings);
         }
 
         @Override
@@ -368,6 +372,9 @@ public class EnterLiveHelper extends Presenter {
 
     @Override
     public void onDestory() {
+        if (isInAVRoom){
+            quiteAVRoom();
+        }
         mStepInOutView = null;
         mContext = null;
     }
@@ -393,7 +400,8 @@ public class EnterLiveHelper extends Presenter {
 
         if (isInAVRoom == true) {
             AVContext avContext = QavsdkControl.getInstance().getAVContext();
-            int result = avContext.exitRoom();
+            if (null != avContext)
+                avContext.exitRoom();
         } else {
             quiteIMChatRoom();
             CurLiveInfo.setCurrentRequestCount(0);
