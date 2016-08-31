@@ -526,7 +526,8 @@ public class LiveHelper extends Presenter {
                 case Constants.AVIMCMD_MUlTI_HOST_INVITE:
                     SxbLog.d(TAG, LogConstants.ACTION_VIEWER_SHOW + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + "receive invite message" +
                             LogConstants.DIV + "id " + identifier);
-                    mLiveView.showInviteDialog();
+                    if (mLiveView != null)
+                        mLiveView.showInviteDialog();
                     break;
                 case Constants.AVIMCMD_MUlTI_JOIN:
                     Log.i(TAG, "handleCustomMsg " + identifier);
@@ -559,8 +560,10 @@ public class LiveHelper extends Presenter {
                     }
                     //其他人关闭小窗口
                     QavsdkControl.getInstance().closeMemberView(closeId);
-                    mLiveView.hideInviteDialog();
-                    mLiveView.refreshUI(closeId);
+                    if (mLiveView != null) {
+                        mLiveView.hideInviteDialog();
+                        mLiveView.refreshUI(closeId);
+                    }
                     break;
                 case Constants.AVIMCMD_MULTI_HOST_CANCELINVITE:
                     mLiveView.hideInviteDialog();
@@ -572,10 +575,12 @@ public class LiveHelper extends Presenter {
                     toggleMic();
                     break;
                 case Constants.AVIMCMD_Host_Leave:
-                    mLiveView.hostLeave(identifier, nickname);
+                    if (mLiveView != null)
+                        mLiveView.hostLeave(identifier, nickname);
                     break;
                 case Constants.AVIMCMD_Host_Back:
-                    mLiveView.hostBack(identifier, nickname);
+                    if (mLiveView != null)
+                        mLiveView.hostBack(identifier, nickname);
                 default:
                     break;
             }
@@ -695,8 +700,6 @@ public class LiveHelper extends Presenter {
             });
         }
     }
-
-
 
 
     public void sendC2CMessage(final int cmd, String Param, final String sendId) {
@@ -869,7 +872,7 @@ public class LiveHelper extends Presenter {
         QavsdkControl qavsdk = QavsdkControl.getInstance();
         AVContext avContext = qavsdk.getAVContext();
         AVRoomMulti room = (AVRoomMulti) avContext.getRoom();
-        if (null == room){
+        if (null == room) {
             SxbLog.w(TAG, "changeAuthority->no room found");
             return false;
         }
