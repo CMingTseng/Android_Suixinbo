@@ -141,7 +141,6 @@
 
         <TextView
             android:id="@+id/text7"
-            android:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_height="35dp"
             android:layout_marginLeft="10dp"
@@ -155,7 +154,6 @@
 
         <CheckBox
             android:id="@+id/record_audio"
-            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="35dp"
             android:layout_alignBottom="@id/text7"
