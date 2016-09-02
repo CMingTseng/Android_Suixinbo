@@ -78,6 +78,7 @@ class AVContextControl {
         mConfig.appIdAt3rd = Integer.toString(appid);
         mConfig.identifier = identifier;
         mUserSig = usersig;
+        mSelfIdentifier = identifier;
     }
 
     /**
