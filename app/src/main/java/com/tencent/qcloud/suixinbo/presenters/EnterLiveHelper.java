@@ -508,7 +508,7 @@ public class EnterLiveHelper extends Presenter {
 
     private void uninitAudioService() {
         if ((QavsdkControl.getInstance() != null) && (QavsdkControl.getInstance().getAVContext() != null) && (QavsdkControl.getInstance().getAVContext().getAudioCtrl() != null)) {
-            QavsdkControl.getInstance().getAVContext().getAudioCtrl().startTRAEService();
+            QavsdkControl.getInstance().getAVContext().getAudioCtrl().stopTRAEService();
         }
     }
 
