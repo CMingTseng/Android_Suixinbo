@@ -236,6 +236,50 @@ public class LiveHelper extends Presenter {
     }
 
 
+
+    /**
+     * AVSDK 请求主播数据
+     *
+     * @param identifiers 主播ID
+     */
+    public void requestScreenViewList(ArrayList<String> identifiers) {
+        SxbLog.i(TAG, "requestViewList " + identifiers);
+        if (identifiers.size() == 0) return;
+        AVEndpoint endpoint = ((AVRoomMulti) QavsdkControl.getInstance().getAVContext().getRoom()).getEndpointById(identifiers.get(0));
+        SxbLog.d(TAG, "requestViewList hostIdentifier " + identifiers + " endpoint " + endpoint);
+        if (endpoint != null) {
+            ArrayList<String> alreadyIds = QavsdkControl.getInstance().getRemoteVideoIds();//已经存在的IDs
+
+            SxbLog.i(TAG, "requestViewList identifiers : " + identifiers.size());
+            SxbLog.i(TAG, "requestViewList alreadyIds : " + alreadyIds.size());
+            for (String id : identifiers) {//把新加入的添加到后面
+                if (!alreadyIds.contains(id)) {
+                    alreadyIds.add(id);
+                }
+            }
+            int viewindex = 0;
+            for (String id : alreadyIds) {//一并请求
+                if (viewindex >= 4) break;
+                AVView view = new AVView();
+                view.videoSrcType = AVView.VIDEO_SRC_TYPE_SCREEN;
+                view.viewSizeType = AVView.VIEW_SIZE_TYPE_BIG;
+                //界面数
+                mRequestViewList[viewindex] = view;
+                mRequestIdentifierList[viewindex] = id;
+                viewindex++;
+            }
+            int ret = QavsdkControl.getInstance().getAvRoomMulti().requestViewList(mRequestIdentifierList, mRequestViewList, viewindex, mRequestViewListCompleteCallback);
+
+        } else {
+            if (null != mContext) {
+                Toast.makeText(mContext, "Wrong Room!!!! Live maybe close already!", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+
+    }
+
+
     private AVRoomMulti.RequestViewListCompleteCallback mRequestViewListCompleteCallback = new AVRoomMulti.RequestViewListCompleteCallback() {
         public void OnComplete(String identifierList[], AVView viewList[], int count, int result) {
             String ids = "";

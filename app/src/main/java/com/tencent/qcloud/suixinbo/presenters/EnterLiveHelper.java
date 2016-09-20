@@ -161,6 +161,31 @@ public class EnterLiveHelper extends Presenter {
                     if (null != mStepInOutView)
                         mStepInOutView.memberQuiteLive(updateList);
                     break;
+                case TYPE_MEMBER_CHANGE_HAS_SCREEN_VIDEO:
+                    video_ids.clear();
+                    for (String id : updateList) {
+                        video_ids.add(id);
+                        SxbLog.i(TAG, "camera id " + id);
+                    }
+                    Intent intent2 = new Intent(Constants.ACTION_SCREEN_SHARE_IN_LIVE);
+                    intent2.putStringArrayListExtra("ids", video_ids);
+                    mContext.sendBroadcast(intent2);
+                    break;
+                case TYPE_MEMBER_CHANGE_NO_SCREEN_VIDEO: {
+                    ArrayList<String> close_ids = new ArrayList<String>();
+                    String ids = "";
+                    for (String id : updateList) {
+                        close_ids.add(id);
+                        ids = ids + " " + id;
+
+                    }
+                    SxbLog.standardMemberShowLog(TAG, "close camera callback", "" + LogConstants.STATUS.SUCCEED, "close ids " + ids);
+
+                    Intent closeintent = new Intent(Constants.ACTION_CAMERA_CLOSE_IN_LIVE);
+                    closeintent.putStringArrayListExtra("ids", close_ids);
+                    mContext.sendBroadcast(closeintent);
+                }
+                break;
                 default:
                     break;
             }
@@ -372,7 +397,7 @@ public class EnterLiveHelper extends Presenter {
 
     @Override
     public void onDestory() {
-        if (isInAVRoom){
+        if (isInAVRoom) {
             quiteAVRoom();
         }
         mStepInOutView = null;

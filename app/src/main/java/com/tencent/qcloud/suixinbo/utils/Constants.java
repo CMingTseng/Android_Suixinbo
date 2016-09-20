@@ -148,6 +148,10 @@ public class Constants {
     public static final String ACTION_CAMERA_OPEN_IN_LIVE = PACKAGE
             + ".ACTION_CAMERA_OPEN_IN_LIVE";
 
+
+    public static final String ACTION_SCREEN_SHARE_IN_LIVE = PACKAGE
+            + ".ACTION_SCREEN_SHARE_IN_LIVE";
+
     public static final String ACTION_CAMERA_CLOSE_IN_LIVE = PACKAGE
             + ".ACTION_CAMERA_CLOSE_IN_LIVE";
 

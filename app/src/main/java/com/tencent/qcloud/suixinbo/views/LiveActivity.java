@@ -122,7 +122,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
     private boolean bFirstRender = true;
     private boolean bInAvRoom = false, bSlideUp = false, bDelayQuit = false;
     private boolean bReadyToChange = false;       // 正在切换房间
-
+    private boolean isScreenShare = false;
     private String backGroundId;
 
     private TextView tvMembers;
@@ -235,6 +235,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
             }
 
             if (action.equals(Constants.ACTION_CAMERA_OPEN_IN_LIVE)) {//有人打开摄像头
+                isScreenShare = false;
                 ArrayList<String> ids = intent.getStringArrayListExtra("ids");
                 //如果是自己本地直接渲染
                 for (String id : ids) {
@@ -258,6 +259,33 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
                 CurLiveInfo.setCurrentRequestCount(requestCount);
 //                }
             }
+
+            if (action.equals(Constants.ACTION_SCREEN_SHARE_IN_LIVE)) {//有屏幕分享
+                ArrayList<String> ids = intent.getStringArrayListExtra("ids");
+                //如果是自己本地直接渲染
+                for (String id : ids) {
+                    if (!mRenderUserList.contains(id)) {
+                        mRenderUserList.add(id);
+                    }
+                    updateHostLeaveLayout();
+
+                    if (id.equals(MySelfInfo.getInstance().getId())) {
+                        showVideoView(true, id);
+                        return;
+//                        ids.remove(id);
+                    }
+                }
+                //其他人一并获取
+                SxbLog.d(TAG, LogConstants.ACTION_VIEWER_SHOW + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + "somebody open camera,need req data"
+                        + LogConstants.DIV + LogConstants.STATUS.SUCCEED + LogConstants.DIV + "ids " + ids.toString());
+                int requestCount = CurLiveInfo.getCurrentRequestCount();
+                mLiveHelper.requestScreenViewList(ids);
+                isScreenShare = true;
+                requestCount = requestCount + ids.size();
+                CurLiveInfo.setCurrentRequestCount(requestCount);
+//                }
+            }
+
 
             if (action.equals(Constants.ACTION_CAMERA_CLOSE_IN_LIVE)) {//有人关闭摄像头
                 ArrayList<String> ids = intent.getStringArrayListExtra("ids");
@@ -313,6 +341,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
         intentFilter.addAction(Constants.ACTION_CAMERA_CLOSE_IN_LIVE);
         intentFilter.addAction(Constants.ACTION_SWITCH_VIDEO);
         intentFilter.addAction(Constants.ACTION_HOST_LEAVE);
+        intentFilter.addAction(Constants.ACTION_SCREEN_SHARE_IN_LIVE);
         registerReceiver(mBroadcastReceiver, intentFilter);
 
     }
@@ -851,7 +880,6 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
     @Override
     public void showVideoView(boolean isLocal, String id) {
         SxbLog.i(TAG, "showVideoView " + id);
-
         //渲染本地Camera
         if (isLocal == true) {
             SxbLog.i(TAG, "showVideoView host :" + MySelfInfo.getInstance().getId());
@@ -876,7 +904,12 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
             }
         } else {
 //            QavsdkControl.getInstance().addRemoteVideoMembers(id);
-            QavsdkControl.getInstance().setRemoteHasVideo(true, id, AVView.VIDEO_SRC_TYPE_CAMERA);
+            if (isScreenShare) {
+                QavsdkControl.getInstance().setRemoteHasVideo(true, id, AVView.VIDEO_SRC_TYPE_SCREEN);
+                isScreenShare = false;
+            } else {
+                QavsdkControl.getInstance().setRemoteHasVideo(true, id, AVView.VIDEO_SRC_TYPE_CAMERA);
+            }
         }
 
     }
