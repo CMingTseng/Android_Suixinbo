@@ -458,7 +458,7 @@ public class EnterLiveHelper extends Presenter {
             enterRoomParam.auth(Constants.NORMAL_MEMBER_AUTH, authBuffer).avControlRole(Constants.NORMAL_MEMBER_ROLE).autoCreateRoom(false).isEnableSpeaker(true);
         }
         enterRoomParam.audioCategory(Constants.AUDIO_VOICE_CHAT_MODE).videoRecvMode(AVRoomMulti.VIDEO_RECV_MODE_SEMI_AUTO_RECV_CAMERA_VIDEO);
-
+//        enterRoomParam.isDegreeFixed(true);
         if (avContext != null) {
             // create room
             int ret = avContext.enterRoom(mEventListener, enterRoomParam.build());

@@ -209,7 +209,7 @@ public class GLVideoView extends GLView {
                     rotation = 1;
                 }
             }
-            Log.d("TestAngle", "angle " + angle + " rotation " + mRotation);
+            Log.d("TestAngle", "angle " + angle + " rotation " + mRotation + " need rotate " + needRotate);
 
 
             float x = p.left;
