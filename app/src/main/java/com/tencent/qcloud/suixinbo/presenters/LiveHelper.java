@@ -236,7 +236,6 @@ public class LiveHelper extends Presenter {
     }
 
 
-
     /**
      * AVSDK 请求主播数据
      *
@@ -850,13 +849,12 @@ public class LiveHelper extends Presenter {
         });
     }
 
+    private boolean isInRecord = false;
 
     public void startRecord(TIMAvManager.RecordParam mRecordParam) {
-
         TIMAvManager.RoomInfo roomInfo = TIMAvManager.getInstance().new RoomInfo();
         roomInfo.setRelationId(CurLiveInfo.getRoomNum());
         roomInfo.setRoomId(CurLiveInfo.getRoomNum());
-
         TIMAvManager.getInstance().requestMultiVideoRecorderStart(roomInfo, mRecordParam, new TIMCallBack() {
             @Override
             public void onError(int i, String s) {
@@ -866,6 +864,7 @@ public class LiveHelper extends Presenter {
 
             @Override
             public void onSuccess() {
+                isInRecord = true;
                 SxbLog.i(TAG, "start record success ");
                 mLiveView.startRecordCallback(true);
             }
@@ -875,24 +874,29 @@ public class LiveHelper extends Presenter {
 
 
     public void stopRecord() {
-        TIMAvManager.RoomInfo roomInfo = TIMAvManager.getInstance().new RoomInfo();
-        roomInfo.setRelationId(CurLiveInfo.getRoomNum());
-        roomInfo.setRoomId(CurLiveInfo.getRoomNum());
-        TIMAvManager.getInstance().requestMultiVideoRecorderStop(roomInfo, new TIMValueCallBack<List<String>>() {
-            @Override
-            public void onError(int i, String s) {
-                SxbLog.e(TAG, "stop record error " + i + " : " + s);
-                mLiveView.stopRecordCallback(false, null);
-            }
+        if (isInRecord) {
+            TIMAvManager.RoomInfo roomInfo = TIMAvManager.getInstance().new RoomInfo();
+            roomInfo.setRelationId(CurLiveInfo.getRoomNum());
+            roomInfo.setRoomId(CurLiveInfo.getRoomNum());
+            TIMAvManager.getInstance().requestMultiVideoRecorderStop(roomInfo, new TIMValueCallBack<List<String>>() {
+                @Override
+                public void onError(int i, String s) {
+                    SxbLog.e(TAG, "stop record error " + i + " : " + s);
+                    if (mLiveView != null)
+                        mLiveView.stopRecordCallback(false, null);
+                }
 
-            @Override
-            public void onSuccess(List<String> files) {
-                SxbLog.e(TAG, "stop record success ");
-                mLiveView.stopRecordCallback(true, files);
+                @Override
+                public void onSuccess(List<String> files) {
+                    isInRecord = false;
+                    SxbLog.e(TAG, "stop record success ");
+                    if (mLiveView != null)
+                        mLiveView.stopRecordCallback(true, files);
 
 
-            }
-        });
+                }
+            });
+        }
     }
 
 

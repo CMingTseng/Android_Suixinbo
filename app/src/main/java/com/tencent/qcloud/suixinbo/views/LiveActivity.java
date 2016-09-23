@@ -604,7 +604,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
             paramTimer.cancel();
             paramTimer = null;
         }
-
+        mLiveHelper.stopRecord();
 
         inviteViewCount = 0;
         thumbUp = 0;
