@@ -2,6 +2,7 @@
     <string name="app_name">Suixinbo</string>
 
     <!-- login re fragment-->
+    <string name="tencent_login">正在登录中，请稍候</string>
     <string name="title_activity_login">LoginActivity</string>
     <string name="title_activity_register">RegisterActivity</string>
     <string name="tencent_tls_ui_independentLoginTitle">用户名登录</string>

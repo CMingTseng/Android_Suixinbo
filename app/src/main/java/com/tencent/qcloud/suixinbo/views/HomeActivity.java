@@ -98,7 +98,7 @@ public class HomeActivity extends BaseFragmentActivity implements ProfileView {
         if (mLoginHelper != null)
             mLoginHelper.onDestory();
         SxbLog.i(TAG, "HomeActivity onDestroy");
-        QavsdkControl.getInstance().stopContext();
+        //QavsdkControl.getInstance().stopContext();
         super.onDestroy();
     }
 

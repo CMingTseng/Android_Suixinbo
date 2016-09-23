@@ -121,7 +121,8 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
     private boolean mProfile;
     private boolean bFirstRender = true;
     private boolean bInAvRoom = false, bSlideUp = false, bDelayQuit = false;
-
+    private boolean bReadyToChange = false;       // 正在切换房间
+    private boolean isScreenShare = false;
     private String backGroundId;
 
     private TextView tvMembers;
@@ -234,6 +235,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
             }
 
             if (action.equals(Constants.ACTION_CAMERA_OPEN_IN_LIVE)) {//有人打开摄像头
+                isScreenShare = false;
                 ArrayList<String> ids = intent.getStringArrayListExtra("ids");
                 //如果是自己本地直接渲染
                 for (String id : ids) {
@@ -257,6 +259,33 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
                 CurLiveInfo.setCurrentRequestCount(requestCount);
 //                }
             }
+
+            if (action.equals(Constants.ACTION_SCREEN_SHARE_IN_LIVE)) {//有屏幕分享
+                ArrayList<String> ids = intent.getStringArrayListExtra("ids");
+                //如果是自己本地直接渲染
+                for (String id : ids) {
+                    if (!mRenderUserList.contains(id)) {
+                        mRenderUserList.add(id);
+                    }
+                    updateHostLeaveLayout();
+
+                    if (id.equals(MySelfInfo.getInstance().getId())) {
+                        showVideoView(true, id);
+                        return;
+//                        ids.remove(id);
+                    }
+                }
+                //其他人一并获取
+                SxbLog.d(TAG, LogConstants.ACTION_VIEWER_SHOW + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + "somebody open camera,need req data"
+                        + LogConstants.DIV + LogConstants.STATUS.SUCCEED + LogConstants.DIV + "ids " + ids.toString());
+                int requestCount = CurLiveInfo.getCurrentRequestCount();
+                mLiveHelper.requestScreenViewList(ids);
+                isScreenShare = true;
+                requestCount = requestCount + ids.size();
+                CurLiveInfo.setCurrentRequestCount(requestCount);
+//                }
+            }
+
 
             if (action.equals(Constants.ACTION_CAMERA_CLOSE_IN_LIVE)) {//有人关闭摄像头
                 ArrayList<String> ids = intent.getStringArrayListExtra("ids");
@@ -312,6 +341,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
         intentFilter.addAction(Constants.ACTION_CAMERA_CLOSE_IN_LIVE);
         intentFilter.addAction(Constants.ACTION_SWITCH_VIDEO);
         intentFilter.addAction(Constants.ACTION_HOST_LEAVE);
+        intentFilter.addAction(Constants.ACTION_SCREEN_SHARE_IN_LIVE);
         registerReceiver(mBroadcastReceiver, intentFilter);
 
     }
@@ -437,6 +467,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
 
 
             mMemberDg = new MembersDialog(this, R.style.floag_dialog, this);
+            mMemberDg.setCanceledOnTouchOutside(true);
             startRecordAnimation();
             showHeadIcon(mHeadIcon, MySelfInfo.getInstance().getAvatar());
             mBeautySettings = (LinearLayout) findViewById(R.id.qav_beauty_setting);
@@ -524,13 +555,11 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
     @Override
     protected void onPause() {
         super.onPause();
-        if (QavsdkControl.getInstance() != null)
-            if (QavsdkControl.getInstance().getAVContext() != null)
-                QavsdkControl.getInstance().getAVContext().getAudioCtrl().enableSpeaker(false);
-        if (mLiveHelper != null)
+        if (null != QavsdkControl.getInstance().getAVContext()) {   // 帐号被踢下线时，AVContext为空
+            QavsdkControl.getInstance().getAVContext().getAudioCtrl().enableSpeaker(false);
             mLiveHelper.pause();
-        if (QavsdkControl.getInstance() != null)
             QavsdkControl.getInstance().onPause();
+        }
     }
 
 
@@ -692,12 +721,13 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
                 mLiveHelper.sendGroupMessage(Constants.AVIMCMD_EnterLive, "");
             }
         }
+
+        bReadyToChange = false;
     }
 
 
     @Override
     public void quiteRoomComplete(int id_status, boolean succ, LiveInfoJson liveinfo) {
-        bInAvRoom = false;
         if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST) {
             if ((getBaseContext() != null) && (null != mDetailDialog) && (mDetailDialog.isShowing() == false)) {
                 SxbLog.d(TAG, LogConstants.ACTION_HOST_QUIT_ROOM + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + "quite room callback"
@@ -709,13 +739,21 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
             }
         } else {
             //finish();
+            if (bInAvRoom) {
+                if (bReadyToChange) {
+                    clearOldData();
+                    mLiveListViewHelper.getPageData();
+                }
+            } else {
+                bReadyToChange = false;
+            }
             if (bDelayQuit) {
-                clearOldData();
                 updateHostLeaveLayout();
             } else {
                 finish();
             }
         }
+        bInAvRoom = false;
     }
 
 
@@ -842,7 +880,6 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
     @Override
     public void showVideoView(boolean isLocal, String id) {
         SxbLog.i(TAG, "showVideoView " + id);
-
         //渲染本地Camera
         if (isLocal == true) {
             SxbLog.i(TAG, "showVideoView host :" + MySelfInfo.getInstance().getId());
@@ -867,7 +904,12 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
             }
         } else {
 //            QavsdkControl.getInstance().addRemoteVideoMembers(id);
-            QavsdkControl.getInstance().setRemoteHasVideo(true, id, AVView.VIDEO_SRC_TYPE_CAMERA);
+            if (isScreenShare) {
+                QavsdkControl.getInstance().setRemoteHasVideo(true, id, AVView.VIDEO_SRC_TYPE_SCREEN);
+                isScreenShare = false;
+            } else {
+                QavsdkControl.getInstance().setRemoteHasVideo(true, id, AVView.VIDEO_SRC_TYPE_CAMERA);
+            }
         }
 
     }
@@ -1240,14 +1282,17 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
                 break;
             case R.id.invite_view1:
                 inviteView1.setVisibility(View.INVISIBLE);
+                inviteView1.setTag("");
                 mLiveHelper.sendGroupMessage(Constants.AVIMCMD_MULTI_CANCEL_INTERACT, "" + inviteView1.getTag());
                 break;
             case R.id.invite_view2:
                 inviteView2.setVisibility(View.INVISIBLE);
+                inviteView2.setTag("");
                 mLiveHelper.sendGroupMessage(Constants.AVIMCMD_MULTI_CANCEL_INTERACT, "" + inviteView2.getTag());
                 break;
             case R.id.invite_view3:
                 inviteView3.setVisibility(View.INVISIBLE);
+                inviteView3.setTag("");
                 mLiveHelper.sendGroupMessage(Constants.AVIMCMD_MULTI_CANCEL_INTERACT, "" + inviteView3.getTag());
                 break;
             case R.id.param_video:
@@ -1640,7 +1685,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
     private String classId = "";
     private boolean mRecord = false;
     private EditText filenameEditText, tagEditText, classEditText;
-    private CheckBox trancodeCheckBox, screenshotCheckBox, watermarkCheckBox;
+    private CheckBox trancodeCheckBox, screenshotCheckBox, watermarkCheckBox, audioCheckBox;
 
     private void initRecordDialog() {
         recordDialog = new Dialog(this, R.style.dialog);
@@ -1653,6 +1698,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
         trancodeCheckBox = (CheckBox) recordDialog.findViewById(R.id.record_tran_code);
         screenshotCheckBox = (CheckBox) recordDialog.findViewById(R.id.record_screen_shot);
         watermarkCheckBox = (CheckBox) recordDialog.findViewById(R.id.record_water_mark);
+        audioCheckBox = (CheckBox) recordDialog.findViewById(R.id.record_audio);
 
         if (filename.length() > 0) {
             filenameEditText.setText(filename);
@@ -1685,6 +1731,12 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
                 mRecordParam.setTransCode(trancodeCheckBox.isChecked());
                 mRecordParam.setSreenShot(screenshotCheckBox.isChecked());
                 mRecordParam.setWaterMark(watermarkCheckBox.isChecked());
+
+                if (audioCheckBox.isChecked()) {
+                    mRecordParam.setRecordType(TIMAvManager.RecordType.AUDIO);
+                } else {
+                    mRecordParam.setRecordType(TIMAvManager.RecordType.VIDEO);
+                }
                 mLiveHelper.startRecord(mRecordParam);
                 recordDialog.dismiss();
             }
@@ -1749,8 +1801,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
 
 
     class VideoOrientationEventListener extends OrientationEventListener {
-        boolean mbIsTablet = false;
-        int mRotationAngle = 0;
+        boolean mbIsTablet = true;
 
         public VideoOrientationEventListener(Context context, int rate) {
             super(context, rate);
@@ -1761,7 +1812,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
 
         @Override
         public void onOrientationChanged(int orientation) {
-            if (orientation == OrientationEventListener.ORIENTATION_UNKNOWN) {
+            if (orientation == OrientationEventListener.ORIENTATION_UNKNOWN) {      // 平放
                 mLastOrientation = orientation;
                 return;
             }
@@ -1775,34 +1826,18 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
                 return;
             }
 
-            if (mbIsTablet) {
-                orientation -= 90;
-                if (orientation < 0) {
-                    orientation += 360;
-                }
-            }
-            mLastOrientation = orientation;
-
-            if (orientation > 314 || orientation < 45) {
-                if (QavsdkControl.getInstance() != null) {
+            //只检测是否有四个角度的改变
+            if (QavsdkControl.getInstance() != null) {
+                if (orientation > 350 || orientation < 10) { //0度
                     QavsdkControl.getInstance().setRotation(0);
-                }
-                mRotationAngle = 0;
-            } else if (orientation > 44 && orientation < 135) {
-                if (QavsdkControl.getInstance() != null) {
+                } else if (orientation > 80 && orientation < 100) { //90度
                     QavsdkControl.getInstance().setRotation(90);
-                }
-                mRotationAngle = 90;
-            } else if (orientation > 134 && orientation < 225) {
-                if (QavsdkControl.getInstance() != null) {
+                } else if (orientation > 170 && orientation < 190) { //180度
                     QavsdkControl.getInstance().setRotation(180);
-                }
-                mRotationAngle = 180;
-            } else {
-                if (QavsdkControl.getInstance() != null) {
+                } else if (orientation > 260 && orientation < 280) { //270度
                     QavsdkControl.getInstance().setRotation(270);
                 }
-                mRotationAngle = 270;
+                return;
             }
         }
     }
@@ -1840,21 +1875,31 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
 
     @Override
     public void onSlideUp() {
-        if (MySelfInfo.getInstance().getIdStatus() != Constants.HOST) {
+        if (!bReadyToChange && MySelfInfo.getInstance().getIdStatus() != Constants.HOST) {
             SxbLog.v(TAG, "ILVB-DBG|onSlideUp->enter");
-            quiteLiveByPurpose();
-            mLiveListViewHelper.getPageData();
             bSlideUp = true;
+            bReadyToChange = true;
+            if (bInAvRoom) {
+                quiteLiveByPurpose();
+            } else {
+                clearOldData();
+                mLiveListViewHelper.getPageData();
+            }
         }
     }
 
     @Override
     public void onSlideDown() {
-        if (MySelfInfo.getInstance().getIdStatus() != Constants.HOST) {
+        if (!bReadyToChange && MySelfInfo.getInstance().getIdStatus() != Constants.HOST) {
             SxbLog.v(TAG, "ILVB-DBG|onSlideDown->enter");
-            quiteLiveByPurpose();
-            mLiveListViewHelper.getPageData();
             bSlideUp = false;
+            bReadyToChange = true;
+            if (bInAvRoom) {
+                quiteLiveByPurpose();
+            } else {
+                clearOldData();
+                mLiveListViewHelper.getPageData();
+            }
         }
     }
 

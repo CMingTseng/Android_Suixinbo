@@ -227,7 +227,53 @@ public class LiveHelper extends Presenter {
             int ret = QavsdkControl.getInstance().getAvRoomMulti().requestViewList(mRequestIdentifierList, mRequestViewList, viewindex, mRequestViewListCompleteCallback);
 
         } else {
-            Toast.makeText(mContext, "Wrong Room!!!! Live maybe close already!", Toast.LENGTH_SHORT).show();
+            if (null != mContext) {
+                Toast.makeText(mContext, "Wrong Room!!!! Live maybe close already!", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+
+    }
+
+
+
+    /**
+     * AVSDK 请求主播数据
+     *
+     * @param identifiers 主播ID
+     */
+    public void requestScreenViewList(ArrayList<String> identifiers) {
+        SxbLog.i(TAG, "requestViewList " + identifiers);
+        if (identifiers.size() == 0) return;
+        AVEndpoint endpoint = ((AVRoomMulti) QavsdkControl.getInstance().getAVContext().getRoom()).getEndpointById(identifiers.get(0));
+        SxbLog.d(TAG, "requestViewList hostIdentifier " + identifiers + " endpoint " + endpoint);
+        if (endpoint != null) {
+            ArrayList<String> alreadyIds = QavsdkControl.getInstance().getRemoteVideoIds();//已经存在的IDs
+
+            SxbLog.i(TAG, "requestViewList identifiers : " + identifiers.size());
+            SxbLog.i(TAG, "requestViewList alreadyIds : " + alreadyIds.size());
+            for (String id : identifiers) {//把新加入的添加到后面
+                if (!alreadyIds.contains(id)) {
+                    alreadyIds.add(id);
+                }
+            }
+            int viewindex = 0;
+            for (String id : alreadyIds) {//一并请求
+                if (viewindex >= 4) break;
+                AVView view = new AVView();
+                view.videoSrcType = AVView.VIDEO_SRC_TYPE_SCREEN;
+                view.viewSizeType = AVView.VIEW_SIZE_TYPE_BIG;
+                //界面数
+                mRequestViewList[viewindex] = view;
+                mRequestIdentifierList[viewindex] = id;
+                viewindex++;
+            }
+            int ret = QavsdkControl.getInstance().getAvRoomMulti().requestViewList(mRequestIdentifierList, mRequestViewList, viewindex, mRequestViewListCompleteCallback);
+
+        } else {
+            if (null != mContext) {
+                Toast.makeText(mContext, "Wrong Room!!!! Live maybe close already!", Toast.LENGTH_SHORT).show();
+            }
         }
 
 
@@ -255,9 +301,13 @@ public class LiveHelper extends Presenter {
                 @Override
                 public void onError(int i, String s) {
                     if (i == 85) { //消息体太长
-                        Toast.makeText(mContext, "Text too long ", Toast.LENGTH_SHORT).show();
+                        if (null != mContext) {
+                            Toast.makeText(mContext, "Text too long ", Toast.LENGTH_SHORT).show();
+                        }
                     } else if (i == 6011) {//群主不存在
-                        Toast.makeText(mContext, "Host don't exit ", Toast.LENGTH_SHORT).show();
+                        if (null != mContext) {
+                            Toast.makeText(mContext, "Host don't exit ", Toast.LENGTH_SHORT).show();
+                        }
                     }
                     SxbLog.e(TAG, "send message failed. code: " + i + " errmsg: " + s);
                 }
@@ -312,9 +362,13 @@ public class LiveHelper extends Presenter {
             @Override
             public void onError(int i, String s) {
                 if (i == 85) { //消息体太长
-                    Toast.makeText(mContext, "Text too long ", Toast.LENGTH_SHORT).show();
+                    if (null != mContext) {
+                        Toast.makeText(mContext, "Text too long ", Toast.LENGTH_SHORT).show();
+                    }
                 } else if (i == 6011) {//群主不存在
-                    Toast.makeText(mContext, "Host don't exit ", Toast.LENGTH_SHORT).show();
+                    if (null != mContext) {
+                        Toast.makeText(mContext, "Host don't exit ", Toast.LENGTH_SHORT).show();
+                    }
                 }
                 SxbLog.e(TAG, "send message failed. code: " + i + " errmsg: " + s);
             }
@@ -448,8 +502,9 @@ public class LiveHelper extends Presenter {
                 //系统消息
                 if (type == TIMElemType.GroupSystem) {
                     if (TIMGroupSystemElemType.TIM_GROUP_SYSTEM_DELETE_GROUP_TYPE == ((TIMGroupSystemElem) elem).getSubtype()) {
-                        mContext.sendBroadcast(new Intent(
-                                Constants.ACTION_HOST_LEAVE));
+                        if (null != mContext) {
+                            mContext.sendBroadcast(new Intent(Constants.ACTION_HOST_LEAVE));
+                        }
                     }
 
                 }
@@ -526,18 +581,24 @@ public class LiveHelper extends Presenter {
                 case Constants.AVIMCMD_MUlTI_HOST_INVITE:
                     SxbLog.d(TAG, LogConstants.ACTION_VIEWER_SHOW + LogConstants.DIV + MySelfInfo.getInstance().getId() + LogConstants.DIV + "receive invite message" +
                             LogConstants.DIV + "id " + identifier);
-                    mLiveView.showInviteDialog();
+                    if (mLiveView != null)
+                        mLiveView.showInviteDialog();
                     break;
                 case Constants.AVIMCMD_MUlTI_JOIN:
                     Log.i(TAG, "handleCustomMsg " + identifier);
-                    mLiveView.cancelInviteView(identifier);
+                    if (null != mLiveView)
+                        mLiveView.cancelInviteView(identifier);
                     break;
                 case Constants.AVIMCMD_MUlTI_REFUSE:
-                    mLiveView.cancelInviteView(identifier);
-                    Toast.makeText(mContext, identifier + " refuse !", Toast.LENGTH_SHORT).show();
+                    if (null != mLiveView)
+                        mLiveView.cancelInviteView(identifier);
+                    if (null != mContext) {
+                        Toast.makeText(mContext, identifier + " refuse !", Toast.LENGTH_SHORT).show();
+                    }
                     break;
                 case Constants.AVIMCMD_Praise:
-                    mLiveView.refreshThumbUp();
+                    if (null != mLiveView)
+                        mLiveView.refreshThumbUp();
                     break;
                 case Constants.AVIMCMD_EnterLive:
                     //mLiveView.refreshText("Step in live", sendId);
@@ -559,11 +620,14 @@ public class LiveHelper extends Presenter {
                     }
                     //其他人关闭小窗口
                     QavsdkControl.getInstance().closeMemberView(closeId);
-                    mLiveView.hideInviteDialog();
-                    mLiveView.refreshUI(closeId);
+                    if (mLiveView != null) {
+                        mLiveView.hideInviteDialog();
+                        mLiveView.refreshUI(closeId);
+                    }
                     break;
                 case Constants.AVIMCMD_MULTI_HOST_CANCELINVITE:
-                    mLiveView.hideInviteDialog();
+                    if (null != mLiveView)
+                        mLiveView.hideInviteDialog();
                     break;
                 case Constants.AVIMCMD_MULTI_HOST_CONTROLL_CAMERA:
                     toggleCamera();
@@ -572,10 +636,12 @@ public class LiveHelper extends Presenter {
                     toggleMic();
                     break;
                 case Constants.AVIMCMD_Host_Leave:
-                    mLiveView.hostLeave(identifier, nickname);
+                    if (mLiveView != null)
+                        mLiveView.hostLeave(identifier, nickname);
                     break;
                 case Constants.AVIMCMD_Host_Back:
-                    mLiveView.hostBack(identifier, nickname);
+                    if (mLiveView != null)
+                        mLiveView.hostBack(identifier, nickname);
                 default:
                     break;
             }
@@ -742,7 +808,9 @@ public class LiveHelper extends Presenter {
                 @Override
                 public void onError(int i, String s) {
                     SxbLog.e(TAG, "url error " + i + " : " + s);
-                    Toast.makeText(mContext, "start stream error,try again " + i + " : " + s, Toast.LENGTH_SHORT).show();
+                    if (null != mContext) {
+                        Toast.makeText(mContext, "start stream error,try again " + i + " : " + s, Toast.LENGTH_SHORT).show();
+                    }
                 }
 
                 @Override
@@ -767,8 +835,9 @@ public class LiveHelper extends Presenter {
             @Override
             public void onError(int i, String s) {
                 SxbLog.e(TAG, "stop  push error " + i + " : " + s);
-                Toast.makeText(mContext, "stop stream error,try again " + i + " : " + s, Toast.LENGTH_SHORT).show();
-
+                if (null != mContext) {
+                    Toast.makeText(mContext, "stop stream error,try again " + i + " : " + s, Toast.LENGTH_SHORT).show();
+                }
             }
 
             @Override
@@ -867,6 +936,10 @@ public class LiveHelper extends Presenter {
         QavsdkControl qavsdk = QavsdkControl.getInstance();
         AVContext avContext = qavsdk.getAVContext();
         AVRoomMulti room = (AVRoomMulti) avContext.getRoom();
+        if (null == room) {
+            SxbLog.w(TAG, "changeAuthority->no room found");
+            return false;
+        }
         if (auth_buffer != null) {
             return room.changeAuthority(auth_bits, auth_buffer, auth_buffer.length, callback);
         } else {
@@ -892,15 +965,56 @@ public class LiveHelper extends Presenter {
                                 SxbLog.standardMemberUnShowLog(TAG, "change role down", "" + LogConstants.STATUS.SUCCEED, "role " + role);
                                 closeCameraAndMic();
                             }
-                            Toast.makeText(mContext, "change to VideoMember succ !", Toast.LENGTH_SHORT);
+                            if (null != mContext) {
+                                Toast.makeText(mContext, "change to VideoMember succ !", Toast.LENGTH_SHORT);
+                            }
                         } else {
                             SxbLog.standardMemberUnShowLog(TAG, "change role ", "" + LogConstants.STATUS.FAILED, "code " + arg0);
-                            Toast.makeText(mContext, "change to VideoMember failed", Toast.LENGTH_SHORT);
+                            if (null != mContext) {
+                                Toast.makeText(mContext, "change to VideoMember failed", Toast.LENGTH_SHORT);
+                            }
                         }
                     }
                 }
 
         );
+    }
+
+
+    public void autoFocuse() {
+        AVVideoCtrl videoCtrl = QavsdkControl.getInstance().getAVContext().getVideoCtrl();
+        if (null == videoCtrl) {
+            return;
+        }
+        Camera cam = (Camera) videoCtrl.getCamera();
+        Camera.Parameters parameters = cam.getParameters();
+        parameters = (Camera.Parameters) videoCtrl.getCameraPara();
+        List<String> focusModes = parameters.getSupportedFocusModes();
+        if (focusModes != null && focusModes.contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)) {
+            parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+        } else {
+
+            return;
+        }
+        parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);//1连续对焦
+        cam.setParameters(parameters);
+        cam.cancelAutoFocus();// 2如果要实现连续的自动对焦，这一句必须加上
+//        initCamera();//实现相机的参数初始化
+        if ((cam == null) || (!(cam instanceof Camera))) {
+            return;
+        } else {
+            cam.autoFocus(new Camera.AutoFocusCallback() {
+                @Override
+                public void onAutoFocus(boolean success, Camera camera) {
+                    if (success) {
+//                        initCamera();//实现相机的参数初始化
+                        camera.cancelAutoFocus();//只有加上了这一句，才会自动对焦。
+                    }
+                }
+
+            });
+        }
+
     }
 
 

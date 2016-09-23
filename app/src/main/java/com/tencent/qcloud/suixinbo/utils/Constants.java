@@ -51,6 +51,8 @@ public class Constants {
 
     public static final int IS_ALREADY_MEMBER = 10013;
 
+    public static final int IS_ALREADY_IN_ROOM = 10025;
+
     public static final int TEXT_TYPE = 0;
     public static final int MEMBER_ENTER = 1;
     public static final int MEMBER_EXIT = 2;
@@ -145,6 +147,10 @@ public class Constants {
 
     public static final String ACTION_CAMERA_OPEN_IN_LIVE = PACKAGE
             + ".ACTION_CAMERA_OPEN_IN_LIVE";
+
+
+    public static final String ACTION_SCREEN_SHARE_IN_LIVE = PACKAGE
+            + ".ACTION_SCREEN_SHARE_IN_LIVE";
 
     public static final String ACTION_CAMERA_CLOSE_IN_LIVE = PACKAGE
             + ".ACTION_CAMERA_CLOSE_IN_LIVE";
