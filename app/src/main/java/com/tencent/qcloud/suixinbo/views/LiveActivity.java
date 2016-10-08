@@ -1179,7 +1179,8 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
                 // 添加飘星动画
                 mHeartLayout.addFavor();
                 if (checkInterval()) {
-                    mLiveHelper.sendC2CMessage(Constants.AVIMCMD_Praise, "", CurLiveInfo.getHostID());
+                    //mLiveHelper.sendC2CMessage(Constants.AVIMCMD_Praise, "", CurLiveInfo.getHostID());
+                    mLiveHelper.sendGroupMessage(Constants.AVIMCMD_Praise, "");
                     CurLiveInfo.setAdmires(CurLiveInfo.getAdmires() + 1);
                     tvAdmires.setText("" + CurLiveInfo.getAdmires());
                 } else {
