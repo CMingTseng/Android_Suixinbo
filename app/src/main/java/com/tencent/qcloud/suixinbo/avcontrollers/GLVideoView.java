@@ -236,7 +236,9 @@ public class GLVideoView extends GLView {
             float targetH = h;
             float tRatio = targetW / targetH;
 
-            if (hasBlackBorder(rotation)) {
+            boolean isDegreeFixed = ((imgW < imgH) && (angle == 0));
+
+            if (hasBlackBorder(rotation, isDegreeFixed)) {
                 if (rotation % 2 == 0) {
                     w = targetW;
                     h = w / sRatio;
@@ -265,7 +267,15 @@ public class GLVideoView extends GLView {
                 targetW = w;
                 targetH = h;
                 tRatio = targetW / targetH;
+            } else {
+                int tempW = (int)imgW;
+                if (tempW % 8 !=0) {
+                    //opengl补了黑边，此处要裁剪
+                    imgW = (float)(tempW * tempW) / (float)((tempW / 8 + 1) * 8);
+                    imgH = imgW / sRatio;
+                }
             }
+
 
             x = x * mScale + mPivotX * (1 - mScale);
             y = y * mScale + mPivotY * (1 - mScale);
@@ -404,6 +414,7 @@ public class GLVideoView extends GLView {
     @Override
     public void setRotation(int rotation) {
         rotation = rotation % 360;
+
         switch (rotation) {
             case 270: // 270 degree
                 rotation = 1;
@@ -701,7 +712,8 @@ public class GLVideoView extends GLView {
         invalidate();
     }
 
-    private boolean hasBlackBorder(int rotation) {
+
+    private boolean hasBlackBorder(int rotation, boolean isDegreeFixed) {
         if (null != mIdentifier && mIdentifier.equals("")) {
             return false;
         }
@@ -709,12 +721,13 @@ public class GLVideoView extends GLView {
             if (mIsPC) {
                 return true;
             } else if (rotation % 2 == 0) {
-                return true;
+                return !isDegreeFixed;
+            } else {
+                return isDegreeFixed;
             }
         } else {
             return false;
         }
-        return false;
     }
 
     private Runnable loadingRunnable = new Runnable() {
