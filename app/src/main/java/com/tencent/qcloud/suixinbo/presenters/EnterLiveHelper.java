@@ -78,6 +78,7 @@ public class EnterLiveHelper extends Presenter {
     private AVRoomMulti.EventListener mEventListener = new AVRoomMulti.EventListener() {
         // 创建房间成功回调
         public void onEnterRoomComplete(int result) {
+            SxbLog.i(TAG,"enterAVRoom onEnterRoomComplete: "+result);
             if (result == 0) {
                 SxbLog.standardEnterRoomLog(TAG, "enterAVRoom", "" + LogConstants.STATUS.SUCCEED, "room id" + MySelfInfo.getInstance().getMyRoomNum());
                 //只有进入房间后才能初始化AvView
@@ -231,6 +232,8 @@ public class EnterLiveHelper extends Presenter {
     private void createIMChatRoom() {
         final ArrayList<String> list = new ArrayList<String>();
         final String roomName = "this is a  test";
+        SxbLog.i(TAG,"createIMChatRoom  room " +MySelfInfo.getInstance().getMyRoomNum());
+
         TIMGroupManager.getInstance().createGroup("AVChatRoom", list, roomName, "" + MySelfInfo.getInstance().getMyRoomNum(), new TIMValueCallBack<String>() {
             @Override
             public void onError(int i, String s) {
@@ -302,12 +305,14 @@ public class EnterLiveHelper extends Presenter {
                     hostinfo.put("uid", MySelfInfo.getInstance().getId());
                     hostinfo.put("avatar", MySelfInfo.getInstance().getAvatar());
                     hostinfo.put("username", MySelfInfo.getInstance().getNickName());
+
                     liveInfo.put("host", hostinfo);
                     JSONObject lbs = new JSONObject();
                     lbs.put("longitude", CurLiveInfo.getLong1());
                     lbs.put("latitude", CurLiveInfo.getLat1());
                     lbs.put("address", CurLiveInfo.getAddress());
                     liveInfo.put("lbs", lbs);
+                    liveInfo.put("appid",Constants.SDK_APPID);
 
                 } catch (JSONException e) {
                     e.printStackTrace();
