@@ -815,7 +815,7 @@ public class LiveHelper extends Presenter {
                 @Override
                 public void onSuccess(TIMAvManager.StreamRes streamRes) {
                     SxbLog.i(TAG, "push stream success ");
-                    List<TIMAvManager.LiveUrl> liveUrls = streamRes.getUrls();
+//                    List<TIMAvManager.LiveUrl> liveUrls = streamRes.getUrls();
                     streamChannelID = streamRes.getChnlId();
                     mLiveView.pushStreamSucc(streamRes);
 

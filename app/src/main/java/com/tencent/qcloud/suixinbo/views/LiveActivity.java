@@ -424,7 +424,10 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
         tvTipsMsg = (TextView) findViewById(R.id.qav_tips_msg);
         tvTipsMsg.setTextColor(Color.GREEN);
         paramTimer.schedule(task, 1000, 1000);
-
+        pushBtn = (TextView) findViewById(R.id.push_btn);
+        pushBtn.setVisibility(View.VISIBLE);
+        pushBtn.setOnClickListener(this);
+        initPushDialog();
 
         if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST) {
             mHostCtrView.setVisibility(View.VISIBLE);
@@ -450,11 +453,9 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
             inviteView1.setOnClickListener(this);
             inviteView2.setOnClickListener(this);
             inviteView3.setOnClickListener(this);
-
-
-            pushBtn = (TextView) findViewById(R.id.push_btn);
             pushBtn.setVisibility(View.VISIBLE);
-            pushBtn.setOnClickListener(this);
+
+
 
             recordBtn = (TextView) findViewById(R.id.record_btn);
             recordBtn.setVisibility(View.VISIBLE);
@@ -462,7 +463,6 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
 
             initBackDialog();
             initDetailDailog();
-            initPushDialog();
             initRecordDialog();
 
 
@@ -518,6 +518,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
             mVideoChat.setVisibility(View.GONE);
             BtnScreen = (TextView) findViewById(R.id.clean_screen);
 
+
             List<String> ids = new ArrayList<>();
             ids.add(CurLiveInfo.getHostID());
             showHeadIcon(mHeadIcon, CurLiveInfo.getHostAvator());
@@ -527,6 +528,9 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
             mHostLayout.setOnClickListener(this);
             BtnScreen.setOnClickListener(this);
         }
+
+
+
         BtnNormal = (TextView) findViewById(R.id.normal_btn);
         BtnNormal.setOnClickListener(this);
         mFullControllerUi = (FrameLayout) findViewById(R.id.controll_ui);
@@ -1618,6 +1622,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
         int length = liveUrls.size();
         String url = null;
         String url2 = null;
+        Log.i(TAG, "pushStreamSucc: " + length);
         if (length == 1) {
             TIMAvManager.LiveUrl avUrl = liveUrls.get(0);
             url = avUrl.getUrl();
