@@ -201,15 +201,17 @@ public class GLVideoView extends GLView {
             int height = uiHeight - p.top - p.bottom;
             int angle = mYuvTexture.getImgAngle();
             int rotation;
-            if (needRotate){
-                rotation = (angle + mRotation + 4) % 4;
-            }else{
-                rotation = (angle + mRotation + 4) % 4;
-                if (rotation == 2 || rotation == 0){
-                    rotation = 1;
-                }
-            }
-            Log.d("TestAngle", "angle " + angle + " rotation " + mRotation + " need rotate " + needRotate);
+            rotation = (angle + mRotation + 4) % 4;
+//            if (needRotate){
+//
+//                rotation = (angle + mRotation + 4) % 4;
+//            }else{
+//                rotation = (angle + mRotation + 4) % 4;
+//                if (rotation == 2 || rotation == 0){
+//                    rotation = 1;
+//                }
+//            }
+//            Log.d("TestAngle", "angle " + angle + " rotation " + mRotation + " need rotate " + needRotate);
 
 
             float x = p.left;
