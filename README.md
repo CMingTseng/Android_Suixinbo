@@ -45,10 +45,6 @@
 ![Spear配置](https://raw.githubusercontent.com/zhaoyang21cn/Android_Suixinbo/master/QQ%E6%88%AA%E5%9B%BE20160520170326.jpg)
 
 
-##最新版本App可从应用宝上下载安装（应用名：随心播）
-
-http://android.myapp.com/myapp/detail.htm?apkName=com.tencent.qcloud.suixinbo
-
 
 
 
