@@ -3,9 +3,9 @@
 
 [APK展示](http://android.myapp.com/myapp/detail.htm?apkName=com.tencent.qcloud.suixinbo)   
 
-#集成太难？用eclipse开发这么办？
+#集成太难？
 
-[参见简单DEMO](https://github.com/zhaoyang21cn/ILiveSDK_Android_Demos)  
+[参见简单DEMO，用eclipse开发的也点我](https://github.com/zhaoyang21cn/ILiveSDK_Android_Demos)  
             
 
 # 导入配置 (根目录下有快速入门文档)
