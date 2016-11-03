@@ -3,7 +3,7 @@
 
 [APK展示](http://android.myapp.com/myapp/detail.htm?apkName=com.tencent.qcloud.suixinbo)   
 
-#集成太难？
+#集成太难？用eclipse开发这么办？
 
 [参见简单DEMO](https://github.com/zhaoyang21cn/ILiveSDK_Android_Demos)  
             
