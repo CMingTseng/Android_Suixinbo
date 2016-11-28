@@ -91,6 +91,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
     private static final int MINFRESHINTERVAL = 500;
     private static final int UPDAT_WALL_TIME_TIMER_TASK = 1;
     private static final int TIMEOUT_INVITE = 2;
+    private static final int DELAY_OPENCAM = 3;
     private boolean mBoolRefreshLock = false;
     private boolean mBoolNeedRefresh = false;
     private final Timer mTimer = new Timer();
@@ -176,6 +177,9 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
                     cancelInviteView(id);
                     mLiveHelper.sendGroupMessage(Constants.AVIMCMD_MULTI_HOST_CANCELINVITE, id);
                     break;
+                case DELAY_OPENCAM:
+                    mLiveHelper.openCamera();
+                    break;
             }
             return false;
         }
@@ -230,6 +234,13 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
                 //打开摄像头
                 if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST) {
                     mLiveHelper.openCameraAndMic();
+//                    mHandler.sendEmptyMessageDelayed(DELAY_OPENCAM,5000);
+//                    mHandler.postDelayed(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            mLiveHelper.openCamera();
+//                        }
+//                    },3000);
                 }
 
             }
@@ -457,13 +468,13 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
 
 
 
-            recordBtn = (TextView) findViewById(R.id.record_btn);
-            recordBtn.setVisibility(View.VISIBLE);
-            recordBtn.setOnClickListener(this);
+//            recordBtn = (TextView) findViewById(R.id.record_btn);
+//            recordBtn.setVisibility(View.VISIBLE);
+//            recordBtn.setOnClickListener(this);
 
             initBackDialog();
             initDetailDailog();
-            initRecordDialog();
+
 
 
             mMemberDg = new MembersDialog(this, R.style.floag_dialog, this);
@@ -529,7 +540,10 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
             BtnScreen.setOnClickListener(this);
         }
 
-
+        recordBtn = (TextView) findViewById(R.id.record_btn);
+        recordBtn.setVisibility(View.VISIBLE);
+        recordBtn.setOnClickListener(this);
+        initRecordDialog();
 
         BtnNormal = (TextView) findViewById(R.id.normal_btn);
         BtnNormal.setOnClickListener(this);
@@ -722,7 +736,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
                 SxbLog.i(TAG, "createlive enterRoomComplete isSucc" + isSucc);
             } else {
                 //发消息通知上线
-                mLiveHelper.sendGroupMessage(Constants.AVIMCMD_EnterLive, "");
+                mLiveHelper.sendGroupMessage(Constants.AVIMCMD_ENTERLIVE, "");
             }
         }
 
@@ -1183,8 +1197,8 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
                 // 添加飘星动画
                 mHeartLayout.addFavor();
                 if (checkInterval()) {
-                    //mLiveHelper.sendC2CMessage(Constants.AVIMCMD_Praise, "", CurLiveInfo.getHostID());
-                    mLiveHelper.sendGroupMessage(Constants.AVIMCMD_Praise, "");
+                    //mLiveHelper.sendC2CMessage(Constants.AVIMCMD_PRAISE, "", CurLiveInfo.getHostID());
+                    mLiveHelper.sendGroupMessage(Constants.AVIMCMD_PRAISE, "");
                     CurLiveInfo.setAdmires(CurLiveInfo.getAdmires() + 1);
                     tvAdmires.setText("" + CurLiveInfo.getAdmires());
                 } else {
@@ -1229,6 +1243,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
                 mMemberDg.show();
                 break;
             case R.id.camera_controll:
+                mLiveHelper.openCamera();
                 Toast.makeText(LiveActivity.this, "切换" + backGroundId + "camrea 状态", Toast.LENGTH_SHORT).show();
                 if (backGroundId.equals(MySelfInfo.getInstance().getId())) {//自己关闭自己
                     mLiveHelper.toggleCamera();

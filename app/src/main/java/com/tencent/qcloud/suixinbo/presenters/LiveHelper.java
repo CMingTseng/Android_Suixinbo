@@ -106,7 +106,7 @@ public class LiveHelper extends Presenter {
     /**
      * 打开摄像头
      */
-    private void openCamera() {
+    public void openCamera() {
         if (mIsFrontCamera) {
             enableCamera(FRONT_CAMERA, true);
         } else {
@@ -179,7 +179,7 @@ public class LiveHelper extends Presenter {
                 super.onComplete(enable, result);
                 SxbLog.i(TAG, "createlive enableCamera result " + result);
                 if (result == AVError.AV_OK) {//开启成功
-
+                    autoFocuse();
                     if (camera == FRONT_CAMERA) {
                         mIsFrontCamera = true;
                     } else {
@@ -400,7 +400,7 @@ public class LiveHelper extends Presenter {
 
     public void perpareQuitRoom(boolean bPurpose) {
         if (bPurpose) {
-            sendGroupMessage(Constants.AVIMCMD_ExitLive, "", new TIMValueCallBack<TIMMessage>() {
+            sendGroupMessage(Constants.AVIMCMD_EXITLIVE, "", new TIMValueCallBack<TIMMessage>() {
                 @Override
                 public void onError(int i, String s) {
                     notifyQuitReady();
@@ -420,7 +420,7 @@ public class LiveHelper extends Presenter {
         isBakCameraOpen = isOpenCamera;
         isBakMicOpen = isMicOpen;
         if (isBakCameraOpen || isBakMicOpen) {    // 若摄像头或Mic打开
-            sendGroupMessage(Constants.AVIMCMD_Host_Leave, "", new TIMValueCallBack<TIMMessage>() {
+            sendGroupMessage(Constants.AVIMCMD_HOST_LEAVE, "", new TIMValueCallBack<TIMMessage>() {
                 @Override
                 public void onError(int i, String s) {
                 }
@@ -435,7 +435,7 @@ public class LiveHelper extends Presenter {
 
     public void resume() {
         if (isBakCameraOpen || isBakMicOpen) {
-            sendGroupMessage(Constants.AVIMCMD_Host_Back, "", new TIMValueCallBack<TIMMessage>() {
+            sendGroupMessage(Constants.AVIMCMD_HOST_BACK, "", new TIMValueCallBack<TIMMessage>() {
                 @Override
                 public void onError(int i, String s) {
                 }
@@ -497,7 +497,6 @@ public class LiveHelper extends Presenter {
                 TIMElem elem = currMsg.getElement(j);
                 TIMElemType type = elem.getType();
                 String sendId = currMsg.getSender();
-
                 //系统消息
                 if (type == TIMElemType.GroupSystem) {
                     if (TIMGroupSystemElemType.TIM_GROUP_SYSTEM_DELETE_GROUP_TYPE == ((TIMGroupSystemElem) elem).getSubtype()) {
@@ -595,16 +594,16 @@ public class LiveHelper extends Presenter {
                         Toast.makeText(mContext, identifier + " refuse !", Toast.LENGTH_SHORT).show();
                     }
                     break;
-                case Constants.AVIMCMD_Praise:
+                case Constants.AVIMCMD_PRAISE:
                     if (null != mLiveView)
                         mLiveView.refreshThumbUp();
                     break;
-                case Constants.AVIMCMD_EnterLive:
+                case Constants.AVIMCMD_ENTERLIVE:
                     //mLiveView.refreshText("Step in live", sendId);
                     if (mLiveView != null)
                         mLiveView.memberJoin(identifier, nickname);
                     break;
-                case Constants.AVIMCMD_ExitLive:
+                case Constants.AVIMCMD_EXITLIVE:
                     //mLiveView.refreshText("quite live", sendId);
                     if (mLiveView != null)
                         mLiveView.memberQuit(identifier, nickname);
@@ -634,11 +633,11 @@ public class LiveHelper extends Presenter {
                 case Constants.AVIMCMD_MULTI_HOST_CONTROLL_MIC:
                     toggleMic();
                     break;
-                case Constants.AVIMCMD_Host_Leave:
+                case Constants.AVIMCMD_HOST_LEAVE:
                     if (mLiveView != null)
                         mLiveView.hostLeave(identifier, nickname);
                     break;
-                case Constants.AVIMCMD_Host_Back:
+                case Constants.AVIMCMD_HOST_BACK:
                     if (mLiveView != null)
                         mLiveView.hostBack(identifier, nickname);
                 default:
@@ -991,16 +990,18 @@ public class LiveHelper extends Presenter {
             return;
         }
         Camera cam = (Camera) videoCtrl.getCamera();
-        Camera.Parameters parameters = cam.getParameters();
-        parameters = (Camera.Parameters) videoCtrl.getCameraPara();
+        if(cam==null)return;
+        Camera.Parameters parameters = (Camera.Parameters) videoCtrl.getCameraPara();
+        if(parameters==null)return;
         List<String> focusModes = parameters.getSupportedFocusModes();
         if (focusModes != null && focusModes.contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)) {
+            SxbLog.i(TAG,"it can autoFocuse" );
             parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
         } else {
 
             return;
         }
-        parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);//1连续对焦
+//        parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);//1连续对焦
         cam.setParameters(parameters);
         cam.cancelAutoFocus();// 2如果要实现连续的自动对焦，这一句必须加上
 //        initCamera();//实现相机的参数初始化
@@ -1011,6 +1012,7 @@ public class LiveHelper extends Presenter {
                 @Override
                 public void onAutoFocus(boolean success, Camera camera) {
                     if (success) {
+                        SxbLog.i(TAG," autoFocuse  succ " );
 //                        initCamera();//实现相机的参数初始化
                         camera.cancelAutoFocus();//只有加上了这一句，才会自动对焦。
                     }

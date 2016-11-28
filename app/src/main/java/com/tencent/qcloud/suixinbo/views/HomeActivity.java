@@ -2,6 +2,7 @@ package com.tencent.qcloud.suixinbo.views;
 
 
 import android.content.Intent;
+import android.hardware.Camera;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTabHost;
 import android.text.TextUtils;
@@ -36,6 +37,22 @@ public class HomeActivity extends BaseFragmentActivity implements ProfileView {
     private String mTextviewArray[] = {"live", "publish", "profile"};
     private static final String TAG = HomeActivity.class.getSimpleName();
 
+    public static Camera getCameraInstance(){
+        Camera camera = null;
+        try {
+            camera = Camera.open();
+            Camera.Parameters p = camera.getParameters();
+//            p.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
+//            camera.setParameters(p);
+//            camera.startPreview();
+//            camera.stopPreview();
+        }
+        catch (Exception e){
+            // Camera is not available (in use or does not exist)
+        }
+        return camera; // returns null if camera is unavailable
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,15 +80,19 @@ public class HomeActivity extends BaseFragmentActivity implements ProfileView {
 //                newFragment.show(ft, "dialog");
 
                 startActivity(new Intent(HomeActivity.this, PublishLiveActivity.class));
-
             }
         });
+
 
         // 检测是否需要获取头像
         if (TextUtils.isEmpty(MySelfInfo.getInstance().getAvatar())) {
             infoHelper = new ProfileInfoHelper(this);
             infoHelper.getMyProfile();
         }
+
+        getCameraInstance();
+
+
     }
 
     @Override
@@ -82,6 +103,7 @@ public class HomeActivity extends BaseFragmentActivity implements ProfileView {
             InitBusinessHelper.initApp(getApplicationContext());
             SxbLog.i(TAG, "HomeActivity retry login");
             mLoginHelper = new LoginHelper(this);
+
             mLoginHelper.imLogin(MySelfInfo.getInstance().getId(), MySelfInfo.getInstance().getUserSig());
         }
     }

@@ -1,9 +1,6 @@
 package com.tencent.qcloud.suixinbo.presenters;
 
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.text.TextUtils;
 import android.widget.Toast;
@@ -13,7 +10,6 @@ import com.tencent.TIMLogLevel;
 import com.tencent.TIMManager;
 import com.tencent.TIMUser;
 import com.tencent.TIMUserStatusListener;
-import com.tencent.qcloud.suixinbo.QavsdkApplication;
 import com.tencent.qcloud.suixinbo.R;
 import com.tencent.qcloud.suixinbo.avcontrollers.QavsdkControl;
 import com.tencent.qcloud.suixinbo.model.MySelfInfo;
