@@ -9,8 +9,8 @@
             
 
 # 导入配置 (根目录下有快速入门文档)
-###请注意配置jcenter库 腾讯内部是自己的maven
-![maventojcenter](http://raw.github.com/zhaoyang21cn/Android_Suixinbo/master/raw/settings.png)
+###请注意要配置为jcenter库(如下图) 默认配置的是腾讯内部是库(build.gradle)
+![maventojcenter](https://zhaoyang21cn.github.io/ilivesdk_help/readme_img/sxb_gradle.png)
 
 
 
