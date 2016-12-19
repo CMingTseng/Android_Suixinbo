@@ -379,6 +379,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
             Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.default_avatar);
             Bitmap cirBitMap = UIUtils.createCircleImage(bitmap, 0);
             view.setImageBitmap(cirBitMap);
+
         } else {
             SxbLog.d(TAG, "load icon: " + avatar);
 //            if (isDestroyed() == true) return;
@@ -1757,6 +1758,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
                     mRecordParam.setRecordType(TIMAvManager.RecordType.AUDIO);
                 } else {
                     mRecordParam.setRecordType(TIMAvManager.RecordType.VIDEO);
+                    mRecordParam.setSdkType(TIMAvManager.SDKType.CoastCamara);
                 }
                 mLiveHelper.startRecord(mRecordParam);
                 recordDialog.dismiss();

@@ -24,6 +24,7 @@ import com.tencent.TIMUserProfile;
 import com.tencent.TIMValueCallBack;
 import com.tencent.av.TIMAvManager;
 import com.tencent.av.sdk.AVAudioCtrl;
+import com.tencent.av.sdk.AVCallback;
 import com.tencent.av.sdk.AVContext;
 import com.tencent.av.sdk.AVEndpoint;
 import com.tencent.av.sdk.AVError;
@@ -224,7 +225,7 @@ public class LiveHelper extends Presenter {
                 mRequestIdentifierList[viewindex] = id;
                 viewindex++;
             }
-            int ret = QavsdkControl.getInstance().getAvRoomMulti().requestViewList(mRequestIdentifierList, mRequestViewList, viewindex, mRequestViewListCompleteCallback);
+            QavsdkControl.getInstance().getAvRoomMulti().requestViewList(mRequestIdentifierList, mRequestViewList, viewindex, mRequestViewListCompleteCallback);
 
         } else {
             if (null != mContext) {
@@ -267,7 +268,7 @@ public class LiveHelper extends Presenter {
                 mRequestIdentifierList[viewindex] = id;
                 viewindex++;
             }
-            int ret = QavsdkControl.getInstance().getAvRoomMulti().requestViewList(mRequestIdentifierList, mRequestViewList, viewindex, mRequestViewListCompleteCallback);
+            QavsdkControl.getInstance().getAvRoomMulti().requestViewList(mRequestIdentifierList, mRequestViewList, viewindex, mRequestViewListCompleteCallback);
 
         } else {
             if (null != mContext) {
@@ -280,7 +281,7 @@ public class LiveHelper extends Presenter {
 
 
     private AVRoomMulti.RequestViewListCompleteCallback mRequestViewListCompleteCallback = new AVRoomMulti.RequestViewListCompleteCallback() {
-        public void OnComplete(String identifierList[], AVView viewList[], int count, int result) {
+        public void OnComplete(String identifierList[], AVView viewList[], int count, int result,String s) {
             String ids = "";
 
             for (String id : identifierList) {
@@ -914,8 +915,8 @@ public class LiveHelper extends Presenter {
      * @param role        角色字段
      */
     public void changeAuthandRole(final boolean leverChange, long auth_bits, final String role) {
-        changeAuthority(auth_bits, null, new AVRoomMulti.ChangeAuthorityCallback() {
-            protected void onChangeAuthority(int retCode) {
+        changeAuthority(auth_bits, null, new AVCallback() {
+            public void onComplete(int retCode,String s) {
                 SxbLog.i(TAG, "changeAuthority auth " + retCode);
                 if (retCode == AVError.AV_OK) {
                     changeRole(role, leverChange);
@@ -934,19 +935,18 @@ public class LiveHelper extends Presenter {
      * @param callback
      * @return
      */
-    private boolean changeAuthority(long auth_bits, byte[] auth_buffer, AVRoomMulti.ChangeAuthorityCallback callback) {
+    private void changeAuthority(long auth_bits, byte[] auth_buffer, AVCallback callback) {
         SxbLog.d(TAG, " start change Auth ");
         QavsdkControl qavsdk = QavsdkControl.getInstance();
         AVContext avContext = qavsdk.getAVContext();
         AVRoomMulti room = (AVRoomMulti) avContext.getRoom();
         if (null == room) {
             SxbLog.w(TAG, "changeAuthority->no room found");
-            return false;
         }
         if (auth_buffer != null) {
-            return room.changeAuthority(auth_bits, auth_buffer, auth_buffer.length, callback);
+            room.changeAuthority(auth_bits, auth_buffer, auth_buffer.length, callback);
         } else {
-            return room.changeAuthority(auth_bits, null, 0, callback);
+            room.changeAuthority(auth_bits, null, 0, callback);
         }
     }
 
@@ -957,9 +957,9 @@ public class LiveHelper extends Presenter {
      * @param role 角色名
      */
     public void changeRole(final String role, final boolean leverupper) {
-        ((AVRoomMulti) (QavsdkControl.getInstance().getAvRoomMulti())).changeAVControlRole(role, new AVRoomMulti.ChangeAVControlRoleCompleteCallback() {
+        ((AVRoomMulti) (QavsdkControl.getInstance().getAvRoomMulti())).changeAVControlRole(role, new AVCallback() {
                     @Override
-                    public void OnComplete(int arg0) {
+                    public void onComplete(int arg0,String s) {
                         if (arg0 == AVError.AV_OK) {
                             if (leverupper == true) {
                                 openCameraAndMic();//打开摄像头

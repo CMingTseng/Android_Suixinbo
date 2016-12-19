@@ -77,8 +77,8 @@ public class EnterLiveHelper extends Presenter {
      */
     private AVRoomMulti.EventListener mEventListener = new AVRoomMulti.EventListener() {
         // 创建房间成功回调
-        public void onEnterRoomComplete(int result) {
-            SxbLog.i(TAG,"enterAVRoom onEnterRoomComplete: "+result);
+        public void onEnterRoomComplete(int result,String s) {
+            SxbLog.i(TAG,"enterAVRoom onEnterRoomComplete: "+result+" info " +s);
             if (result == 0) {
                 SxbLog.standardEnterRoomLog(TAG, "enterAVRoom", "" + LogConstants.STATUS.SUCCEED, "room id" + MySelfInfo.getInstance().getMyRoomNum());
                 //只有进入房间后才能初始化AvView
@@ -106,8 +106,14 @@ public class EnterLiveHelper extends Presenter {
                 mStepInOutView.quiteRoomComplete(MySelfInfo.getInstance().getIdStatus(), true, null);
         }
 
+        //新增切换房间接口
         @Override
-        public void onRoomDisconnect(int i) {
+        public void onSwitchRoomComplete(int i, String s) {
+
+        }
+
+        @Override
+        public void onRoomDisconnect(int i,String s) {
             isInAVRoom = false;
             quiteIMChatRoom();
             CurLiveInfo.setCurrentRequestCount(0);
@@ -119,6 +125,7 @@ public class EnterLiveHelper extends Presenter {
         }
 
         //房间成员变化回调
+        @Override
         public void onEndpointsUpdateInfo(int eventid, String[] updateList) {
             SxbLog.d(TAG, "onEndpointsUpdateInfo. eventid = " + eventid);
 
@@ -193,6 +200,7 @@ public class EnterLiveHelper extends Presenter {
 
         }
 
+        //房间成员无某个通话能力权限却去使用相关通话能力而导致的异常通知的函数。当房间成员使用某个通话能力(如发送视频)且这时并没有这个通话能力权限，就会通过这个函数通知业务侧。
         @Override
         public void onPrivilegeDiffNotify(int i) {
 
@@ -204,13 +212,27 @@ public class EnterLiveHelper extends Presenter {
                 mStepInOutView.alreadyInLive(strings);
         }
 
+        //服务器
         @Override
         public void onCameraSettingNotify(int i, int i1, int i2) {
 
         }
 
+        //sdk事件通知。 用于通知从创建房间到退出时的一些事件，目前只通知连接某个接口机ip超时
         @Override
         public void onRoomEvent(int i, int i1, Object o) {
+
+        }
+
+        //录音设备权限通知， 当进入房间后，如果麦克风录音设备被禁用， 上抛该消息。
+        @Override
+        public void onDisableAudioIssue() {
+
+        }
+
+        //硬件状态事件通知，用于通知硬件软件切换的状态
+        @Override
+        public void onHwStateChangeNotify(boolean b, boolean b1, boolean b2, String s) {
 
         }
 
@@ -503,11 +525,10 @@ public class EnterLiveHelper extends Presenter {
             enterRoomParam.auth(Constants.NORMAL_MEMBER_AUTH, authBuffer).avControlRole(Constants.NORMAL_MEMBER_ROLE).autoCreateRoom(false).isEnableSpeaker(true);
         }
         enterRoomParam.audioCategory(Constants.AUDIO_VOICE_CHAT_MODE).videoRecvMode(AVRoomMulti.VIDEO_RECV_MODE_SEMI_AUTO_RECV_CAMERA_VIDEO);
-        enterRoomParam.isDegreeFixed(true);
+//        enterRoomParam.isDegreeFixed(true);
         if (avContext != null) {
             // create room
-            int ret = avContext.enterRoom(mEventListener, enterRoomParam.build());
-            SxbLog.i(TAG, "EnterAVRoom " + ret);
+            avContext.enterRoom(mEventListener, enterRoomParam.build());
         }
 
     }

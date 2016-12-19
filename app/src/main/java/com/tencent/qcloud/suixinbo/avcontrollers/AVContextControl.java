@@ -59,7 +59,7 @@ class AVContextControl {
             SxbLog.i(TAG, "AVSDKLogin startContext hasAVContext ");
             onAVSDKCreate(true, IMSdkInt.get().getTinyId(), 0);
         } else {
-            return AVError.AV_ERR_FAILED;
+            return AVError.AV_ERR_FAIL;
         }
         return result;
     }
@@ -128,8 +128,7 @@ class AVContextControl {
         if (result) {
             mAVContext = AVContext.createInstance(mContext,false);
 
-            int ret = mAVContext.start(mConfig,mStartContextCompleteCallback);
-            SxbLog.i(TAG, "onAVSDKCreate ret "+ret);
+            mAVContext.start(mConfig,mStartContextCompleteCallback);
             mIsInStartContext = true;
         } else {
             mStartContextCompleteCallback.onComplete(errorCode,"");

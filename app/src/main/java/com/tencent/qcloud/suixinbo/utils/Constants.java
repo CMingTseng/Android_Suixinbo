@@ -206,6 +206,8 @@ public class Constants {
 
 
     public static final String HOST_ROLE = "LiveMaster";
+    public static final String HOST_ROLE_TEST = "LiveMaster_test";
     public static final String VIDEO_MEMBER_ROLE = "LiveGuest";
+    public static final String VIDEO_MEMBER_ROLE_TEST = "LiveGuest_test";
     public static final String NORMAL_MEMBER_ROLE = "Guest";
 }

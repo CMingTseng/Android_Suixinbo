@@ -926,6 +926,8 @@ public class AVUIControl extends GLViewGroup {
 
                 }
 
+                HashMap<Integer,Integer> counts = new HashMap<Integer,Integer>();
+
                 if (index >= 0) {
                     view = mGlVideoView[index];
                     view.setRender(remoteIdentifier, videoSrcType);
