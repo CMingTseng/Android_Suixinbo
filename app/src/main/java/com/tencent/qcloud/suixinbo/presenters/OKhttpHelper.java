@@ -1,10 +1,11 @@
 package com.tencent.qcloud.suixinbo.presenters;
 
-import android.content.Context;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+
+import android.content.Context;
+
 import com.tencent.qcloud.suixinbo.model.LiveInfoJson;
 import com.tencent.qcloud.suixinbo.model.MySelfInfo;
 import com.tencent.qcloud.suixinbo.utils.Constants;
@@ -34,12 +35,12 @@ import okhttp3.Response;
 public class OKhttpHelper {
     private static final String TAG = OKhttpHelper.class.getSimpleName();
     private static OKhttpHelper instance = null;
-    public static final String GET_MYROOMID = "http://182.254.234.225/sxb/index.php?svc=user_av_room&cmd=get";
-    public static final String NEW_ROOM_INFO = "http://182.254.234.225/sxb/index.php?svc=live&cmd=start";
-    public static final String STOP_ROOM = "http://182.254.234.225/sxb/index.php?svc=live&cmd=end";
-    public static final String GET_LIVELIST = "http://182.254.234.225/sxb/index.php?svc=live&cmd=list";
-    public static final String SEND_HEARTBEAT = "http://182.254.234.225/sxb/index.php?svc=live&cmd=host_heartbeat";
-    public static final String GET_COS_SIG = "http://182.254.234.225/sxb/index.php?svc=cos&cmd=get_sign";
+    public static final String GET_MYROOMID = "https://sxb.qcloud.com/sxb/index.php?svc=user_av_room&cmd=get";
+    public static final String NEW_ROOM_INFO = "https://sxb.qcloud.com/sxb/index.php?svc=live&cmd=start";
+    public static final String STOP_ROOM = "https://sxb.qcloud.com/sxb/index.php?svc=live&cmd=end";
+    public static final String GET_LIVELIST = "https://sxb.qcloud.com/sxb/index.php?svc=live&cmd=list";
+    public static final String SEND_HEARTBEAT = "https://sxb.qcloud.com/sxb/index.php?svc=live&cmd=host_heartbeat";
+    public static final String GET_COS_SIG = "https://sxb.qcloud.com/sxb/index.php?svc=cos&cmd=get_sign";
 
 
     public static OKhttpHelper getInstance() {

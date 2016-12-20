@@ -82,6 +82,7 @@ public class LiveHelper extends Presenter {
         @Override
         public void onCameraPreviewChangeCallback(int cameraId) {
             SxbLog.d(TAG, "mCameraPreviewChangeCallback.onCameraPreviewChangeCallback cameraId = " + cameraId);
+            autoFocuse();
             QavsdkControl.getInstance().setMirror(FRONT_CAMERA == cameraId);
         }
     };
@@ -178,9 +179,10 @@ public class LiveHelper extends Presenter {
         int ret = avVideoCtrl.enableCamera(camera, isEnable, new AVVideoCtrl.EnableCameraCompleteCallback() {
             protected void onComplete(boolean enable, int result) {//开启摄像头回调
                 super.onComplete(enable, result);
+//                autoFocuse();
                 SxbLog.i(TAG, "createlive enableCamera result " + result);
                 if (result == AVError.AV_OK) {//开启成功
-                    autoFocuse();
+
                     if (camera == FRONT_CAMERA) {
                         mIsFrontCamera = true;
                     } else {
@@ -1012,7 +1014,7 @@ public class LiveHelper extends Presenter {
                 @Override
                 public void onAutoFocus(boolean success, Camera camera) {
                     if (success) {
-                        SxbLog.i(TAG," autoFocuse  succ " );
+                        SxbLog.i(TAG,"   succ " );
 //                        initCamera();//实现相机的参数初始化
                         camera.cancelAutoFocus();//只有加上了这一句，才会自动对焦。
                     }
