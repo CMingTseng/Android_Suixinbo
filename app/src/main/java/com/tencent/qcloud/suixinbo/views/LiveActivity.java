@@ -468,14 +468,12 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
             pushBtn.setVisibility(View.VISIBLE);
 
 
-
 //            recordBtn = (TextView) findViewById(R.id.record_btn);
 //            recordBtn.setVisibility(View.VISIBLE);
 //            recordBtn.setOnClickListener(this);
 
             initBackDialog();
             initDetailDailog();
-
 
 
             mMemberDg = new MembersDialog(this, R.style.floag_dialog, this);
@@ -712,9 +710,6 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
 
     /**
      * 完成进出房间流程
-     *
-     * @param id_status
-     * @param isSucc
      */
     @Override
     public void enterRoomComplete(int id_status, boolean isSucc) {
@@ -800,9 +795,6 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
 
     /**
      * 成员状态变更
-     *
-     * @param id
-     * @param name
      */
     @Override
     public void memberJoin(String id, String name) {
@@ -1033,9 +1025,6 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
 
     /**
      * 判断是否邀请过同一个人
-     *
-     * @param id
-     * @return
      */
     private boolean hasInvited(String id) {
         if (id.equals(inviteView1.getTag())) {
@@ -1627,8 +1616,6 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
 
     /**
      * 推流成功
-     *
-     * @param streamRes
      */
     @Override
     public void pushStreamSucc(TIMAvManager.StreamRes streamRes) {
@@ -1653,9 +1640,6 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
 
     /**
      * 将地址黏贴到黏贴版
-     *
-     * @param url
-     * @param url2
      */
     private void ClipToBoard(final String url, final String url2) {
         SxbLog.i(TAG, "ClipToBoard url " + url);
@@ -1929,6 +1913,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
     @Override
     public void showFirstPage(ArrayList<LiveInfoJson> livelist) {
         int index = 0, oldPos = 0;
+        if (livelist.size() == 0) return;
         for (; index < livelist.size(); index++) {
             if (livelist.get(index).getAvRoomId() == CurLiveInfo.getRoomNum()) {
                 oldPos = index;
